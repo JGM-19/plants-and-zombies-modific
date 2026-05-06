@@ -2,29 +2,67 @@ package joshxviii.plantz.entity.plant
 
 import joshxviii.plantz.PazComponents
 import joshxviii.plantz.PazConfig
+import joshxviii.plantz.PazDamageTypes
 import joshxviii.plantz.PazEntities
 import joshxviii.plantz.PazItems
 import joshxviii.plantz.PazSounds
+import joshxviii.plantz.entity.plant.PlantUtils.EXPLOSION_DAMAGE_CALCULATOR
 import joshxviii.plantz.getTotalSun
 import joshxviii.plantz.removeSunFromStorageAndInventory
 import net.minecraft.ChatFormatting
+import net.minecraft.core.Holder
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.network.chat.Component
+import net.minecraft.resources.ResourceKey
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundEvents
+import net.minecraft.util.random.WeightedList
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
+import net.minecraft.world.damagesource.DamageType
+import net.minecraft.world.entity.OwnableEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.ItemUtils
 import net.minecraft.world.item.Items
 import net.minecraft.world.item.alchemy.Potions
+import net.minecraft.world.level.ExplosionDamageCalculator
+import net.minecraft.world.level.Level
+import net.minecraft.world.level.SimpleExplosionDamageCalculator
+import java.util.Optional
 
-class PlantUtils {
+object PlantUtils {
+    val EXPLOSION_DAMAGE_CALCULATOR: ExplosionDamageCalculator = SimpleExplosionDamageCalculator(false, true, Optional.of<Float>(1f), Optional.ofNullable(null))
+}
+
+fun Plant.explode(
+    radius: Float = 4.0f,
+    sound: Holder.Reference<SoundEvent> = PazSounds.PLANT_EXPLODE,
+    damageType: ResourceKey<DamageType> = PazDamageTypes.PLANT_AOE,
+) {
+    val level = this.level()
+    val source = this.damageSources().source(damageType, this,
+        if (PazConfig.PLAYER_CREDIT_FOR_PLANT_KILLS) this.rootOwner else null)
+    level.explode(
+        this,
+        source,
+        EXPLOSION_DAMAGE_CALCULATOR,
+        x, y, z,
+        radius,
+        false,
+        Level.ExplosionInteraction.MOB,
+        ParticleTypes.SMOKE,
+        ParticleTypes.EXPLOSION,
+        WeightedList.of(),
+        sound
+    )
+    this.discard()
 }
 
 // PLANT ITEM INTERACTIONS
+// sun interaction
 fun Plant.processSunItem(player: Player, item: ItemStack, hand: InteractionHand, growNeeds: PlantGrowNeeds): Boolean {
     val hasStoredSun = item.get(PazComponents.STORED_SUN)?.hasSun() == true
     val isSunItem = item.`is`(PazItems.SUN)
@@ -59,7 +97,7 @@ fun Plant.processSunItem(player: Player, item: ItemStack, hand: InteractionHand,
     }
     return success
 }
-
+// watering interaction
 fun Plant.processWateringItem(player: Player, item: ItemStack, hand: InteractionHand, growNeeds: PlantGrowNeeds): Boolean {
     if (growNeeds != PlantGrowNeeds.WATER) return false
     val isWaterBottle = item.components.get(DataComponents.POTION_CONTENTS)?.`is`(Potions.WATER) == true
@@ -91,9 +129,8 @@ fun Plant.processWateringItem(player: Player, item: ItemStack, hand: Interaction
     }
     return false
 }
-
+// seed packet interaction
 fun Plant.processSeedPacketInteraction(player: Player, packet: ItemStack): PacketInteractionResult {
-    if (packet == null) return PacketInteractionResult.NO_INTERACTION
     val type = packet.get(DataComponents.ENTITY_DATA)?.type()
     val availableSun = player.getTotalSun()
     val sunCost = packet.get(PazComponents.SUN_COST)?.sunCost?: 0

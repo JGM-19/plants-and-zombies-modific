@@ -3,7 +3,7 @@ package joshxviii.plantz.entity.projectile
 import joshxviii.plantz.PazConfig
 import joshxviii.plantz.PazDamageTypes
 import joshxviii.plantz.entity.plant.Plant
-import joshxviii.plantz.hasSameOwner
+import joshxviii.plantz.hasSameRootOwner
 import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.ParticleOptions
 import net.minecraft.core.particles.ParticleTypes
@@ -119,7 +119,10 @@ abstract class PazProjectile(
         val target = hitResult.entity
         val serverLevel = this.level() as? ServerLevel
         if (serverLevel != null) {
-            val owner = this.getOwner() as? LivingEntity
+            val owner = getOwner().let {
+                if (it is OwnableEntity && PazConfig.PLAYER_CREDIT_FOR_PLANT_KILLS) it.rootOwner
+                else it as? LivingEntity
+            }
             owner?.setLastHurtMob(target)
 
             // get damage from attribute
@@ -251,7 +254,7 @@ abstract class PazProjectile(
     override fun canHitEntity(entity: Entity): Boolean {
         val playerOwner = (entityOwner as? OwnableEntity)?.owner as? Player
         if ((entity is Plant && entityOwner is Plant) || (entity is Enemy && entityOwner is Enemy)) return false
-        return if (entity.hasSameOwner(entityOwner)) false
+        return if (this.hasSameRootOwner(entity)) false
         else if (playerOwner != null && (entity.`is`(playerOwner) || (entity is Player && PazConfig.COOP_PLANTING))) false
         else entity !is Projectile && super.canHitEntity(entity) && !this.piercingIgnoreEntityIds.contains(entity.id)
     }

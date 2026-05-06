@@ -3,32 +3,27 @@ package joshxviii.plantz
 import joshxviii.plantz.PazMain.MODID
 import joshxviii.plantz.entity.plant.Chomper
 import joshxviii.plantz.entity.plant.Plant
-import net.minecraft.ChatFormatting
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Vec3i
-import net.minecraft.core.component.DataComponents
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.network.chat.Component
 import net.minecraft.resources.Identifier
 import net.minecraft.server.level.ServerEntityGetter
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.server.packs.resources.ResourceManager
-import net.minecraft.sounds.SoundEvents
 import net.minecraft.util.Mth
-import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.Entity.MoveFunction
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.OwnableEntity
+import net.minecraft.world.entity.TamableAnimal
 import net.minecraft.world.entity.ai.control.LookControl
 import net.minecraft.world.entity.ai.navigation.PathNavigation
 import net.minecraft.world.entity.ai.targeting.TargetingConditions
+import net.minecraft.world.entity.animal.Animal
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.entity.projectile.Projectile
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.item.ItemUtils
-import net.minecraft.world.item.Items
-import net.minecraft.world.item.alchemy.Potions
 import net.minecraft.world.level.pathfinder.Path
 import net.minecraft.world.phys.Vec3
 
@@ -134,10 +129,27 @@ fun Int.tickTimeFormat(): String = "%02d:%02d".format(
     (this / 20) % 60,
 )
 
-fun Entity.hasSameOwner(target: Entity?): Boolean {
-    return if ((this is OwnableEntity && target is OwnableEntity))
-        owner.let { it!=null && target.owner?.`is`(it) == true }
-    else false
+fun Entity.hasSameRootOwner(target: Entity?): Boolean {
+    if (target == null) return false
+
+    val owner = extractRootOwner(this)
+    val targetOwner = extractRootOwner(target)
+
+    if (owner == null || targetOwner == null) return false
+
+    if (PazConfig.COOP_PLANTING &&
+        this is Plant && this.isTame &&
+        target is TamableAnimal && target.isTame) {
+        return true
+    }
+
+    return owner.`is`(targetOwner)
+}
+
+private fun extractRootOwner(entity: Entity): Entity? = when (entity) {
+    is OwnableEntity -> entity.rootOwner
+    is Projectile -> (entity.owner as? OwnableEntity)?.rootOwner ?: entity.owner
+    else -> null
 }
 
 fun Entity.applyImpulse(xd: Double, yd: Double, zd: Double, pow: Float, uncertainty: Float) {

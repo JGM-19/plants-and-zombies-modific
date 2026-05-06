@@ -1,16 +1,16 @@
 {
   "values": [
-    "#minecraft:dirt",
-    "#minecraft:grass_blocks",
-    "#minecraft:nylium",
-    "#minecraft:moss_blocks",
     "minecraft:mud",
     "minecraft:dirt_path",
     "minecraft:lily_pad",
     "minecraft:flower_pot",
     "minecraft:clay",
     "minecraft:soul_soil",
-    "#plantz:plant_pot",
+    "#minecraft:dirt",
+    "#minecraft:grass_blocks",
+    "#minecraft:nylium",
+    "#minecraft:moss_blocks",
+    "#plantz:gives_plant_pot_protection",
     "#plantz:farmable"
   ]
 }

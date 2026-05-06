@@ -10,13 +10,14 @@ import org.apache.logging.log4j.Logger
 
 object PazMain : ModInitializer {
 	const val MODID = "plantz"
+	const val CONFIG_PATH = "plants-and-zombies.json"
 	@JvmField
 	val LOGGER: Logger = LogManager.getLogger()
 
 	override fun onInitialize() {
 		PazConfig.load()
-
 		ServerLifecycleEvents.SERVER_STARTING.register { PazConfig.load() }
+
 		ServerTickEvents.END_LEVEL_TICK.register { it.getZombieRaids().tick(it) }
 
 		PazServerParticles.initialize()

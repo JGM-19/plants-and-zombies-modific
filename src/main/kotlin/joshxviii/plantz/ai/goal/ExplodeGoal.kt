@@ -3,6 +3,7 @@ package joshxviii.plantz.ai.goal
 import joshxviii.plantz.PazDamageTypes
 import joshxviii.plantz.PazSounds
 import joshxviii.plantz.entity.plant.Plant
+import joshxviii.plantz.entity.plant.explode
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvents
@@ -36,7 +37,6 @@ class ExplodeGoal(
     protected val targetConditions: TargetingConditions
 
     companion object {
-        val EXPLOSION_DAMAGE_CALCULATOR: ExplosionDamageCalculator = SimpleExplosionDamageCalculator(false, true, Optional.of<Float>(1f), Optional.ofNullable(null))
         private const val DISTANCE_SQR = 49.0
     }
 
@@ -84,27 +84,6 @@ class ExplodeGoal(
             plantEntity.gameEvent(GameEvent.PRIME_FUSE)
         }
 
-        if (plantEntity.swell == plantEntity.getMaxSwell()) explode()
+        if (plantEntity.swell == plantEntity.getMaxSwell()) plantEntity.explode()
     }
-
-    fun explode() {
-        val level = plantEntity.level()
-        level.explode(
-            plantEntity,
-            level.damageSources().source(PazDamageTypes.PLANT_AOE),
-            EXPLOSION_DAMAGE_CALCULATOR,
-            plantEntity.x,
-            plantEntity.y,
-            plantEntity.z,
-            radius,
-            false,
-            Level.ExplosionInteraction.MOB,
-            ParticleTypes.SMOKE,
-            ParticleTypes.EXPLOSION,
-            WeightedList.of(),
-            PazSounds.PLANT_EXPLODE
-        )
-        plantEntity.discard()
-    }
-
 }

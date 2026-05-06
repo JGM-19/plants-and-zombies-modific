@@ -1,5 +1,6 @@
 package joshxviii.plantz.ai.goal
 
+import joshxviii.plantz.PazConfig
 import joshxviii.plantz.PazDamageTypes
 import joshxviii.plantz.entity.plant.Plant
 import net.minecraft.core.particles.ParticleOptions
@@ -9,6 +10,7 @@ import net.minecraft.util.Mth
 import net.minecraft.world.damagesource.DamageType
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.entity.OwnableEntity
 import net.minecraft.world.entity.PathfinderMob
 import net.minecraft.world.entity.ai.attributes.Attributes
 import net.minecraft.world.phys.AABB
@@ -61,25 +63,26 @@ class BeamAttackGoal(
             entity is LivingEntity && entity !is Plant && entity.isAlive
         }
 
-        for (entity in candidates) {
-            if (!usingEntity.canAttack(entity as LivingEntity)) continue
-            val distToRay = distanceToLineSegment(entity.eyePosition, start, end)
-            val entityRadiusApprox = entity.boundingBox.size / 2.0
+        for (target in candidates) {
+            if (!usingEntity.canAttack(target as LivingEntity)) continue
+            val distToRay = distanceToLineSegment(target.eyePosition, start, end)
+            val entityRadiusApprox = target.boundingBox.size / 2.0
             if (distToRay <= (beamWidth / 2.0 + entityRadiusApprox)) {
 
                 val damage : Float = usingEntity.attributes.getValue(Attributes.ATTACK_DAMAGE).toFloat()
                 val knockback : Double = usingEntity.attributes.getValue(Attributes.ATTACK_KNOCKBACK)
-                val source = usingEntity.damageSources().source(damageType, usingEntity)
+                val source = usingEntity.damageSources().source(damageType, usingEntity,
+                    if (PazConfig.PLAYER_CREDIT_FOR_PLANT_KILLS && usingEntity is OwnableEntity) usingEntity.rootOwner else null)
 
-                if (entity.hurtServer(usingEntity.level() as ServerLevel, source, damage)) {
-                    afterHitEntityEffect(entity)
-                    entity.knockback(
+                if (target.hurtServer(usingEntity.level() as ServerLevel, source, damage)) {
+                    afterHitEntityEffect(target)
+                    target.knockback(
                         knockback,
-                        start.x - entity.x,
-                        start.z - entity.z
+                        start.x - target.x,
+                        start.z - target.z
                     )
                 }
-                piercedEntities?.add(entity)
+                piercedEntities?.add(target)
             }
         }
 

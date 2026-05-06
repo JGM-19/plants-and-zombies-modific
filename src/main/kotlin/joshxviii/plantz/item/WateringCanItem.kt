@@ -94,8 +94,12 @@ class WateringCanItem(properties: Properties) : BlockItem(PazBlocks.WATERING_CAN
                 success = true
             }
             if (blockState.hasProperty(BlockStateProperties.MOISTURE)) {// farmland
-                level.setBlockAndUpdate(pos, blockState.setValue(BlockStateProperties.MOISTURE, 7))
-                success = true
+                blockState.getValue(BlockStateProperties.MOISTURE).let {
+                    if (it<7) {
+                        level.setBlockAndUpdate(pos, blockState.setValue(BlockStateProperties.MOISTURE, 7))
+                        success = true
+                    }
+                }
             }
             if (blockState.`is`(Blocks.CAULDRON)) {
                 val newState: BlockState = Blocks.WATER_CAULDRON.defaultBlockState()

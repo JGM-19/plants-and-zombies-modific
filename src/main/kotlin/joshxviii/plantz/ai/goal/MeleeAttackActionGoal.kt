@@ -1,11 +1,13 @@
 package joshxviii.plantz.ai.goal
 
+import joshxviii.plantz.PazConfig
 import joshxviii.plantz.PazDamageTypes
 import joshxviii.plantz.entity.plant.Plant
 import net.minecraft.resources.ResourceKey
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.damagesource.DamageType
 import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.entity.OwnableEntity
 import net.minecraft.world.entity.PathfinderMob
 import net.minecraft.world.entity.ai.attributes.Attributes
 import java.util.function.Predicate
@@ -19,6 +21,7 @@ open class MeleeAttackActionGoal(
     actionPredicate: Predicate<PathfinderMob> = Predicate { true },
     val attackReach : Double = 5.0,
     val damageType: ResourceKey<DamageType> = PazDamageTypes.PLANT,
+    val afterHitEntityEffect: (target: LivingEntity) -> Unit = {},
 ) : ActionGoal(usingEntity, cooldownTime, actionDelay, actionStartEffect, actionEndEffect, actionPredicate) {
 
     override fun canUse(): Boolean = (
@@ -41,9 +44,11 @@ open class MeleeAttackActionGoal(
 
         val damage : Float = usingEntity.attributes.getValue(Attributes.ATTACK_DAMAGE).toFloat()
         val knockback : Double = usingEntity.attributes.getValue(Attributes.ATTACK_KNOCKBACK)
-        val source = usingEntity.damageSources().source(damageType, usingEntity)
+        val source = usingEntity.damageSources().source(damageType, usingEntity,
+            if (PazConfig.PLAYER_CREDIT_FOR_PLANT_KILLS && usingEntity is OwnableEntity) usingEntity.rootOwner else null)
 
         if (target.hurtServer(usingEntity.level() as ServerLevel, source, damage)) {
+            afterHitEntityEffect(target)
             target.knockback(
                 knockback,
                 usingEntity.x - target.x,

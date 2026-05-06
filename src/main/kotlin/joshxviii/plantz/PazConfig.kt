@@ -12,19 +12,19 @@ import kotlin.io.path.reader
 import kotlin.io.path.writer
 
 object PazConfig {
-    const val CONFIG_PATH = "plants-and-zombies.json"
-
     private val gson = GsonBuilder()
         .setPrettyPrinting()
         .disableHtmlEscaping()
         .create()
 
-    private val path: Path = FabricLoader.getInstance().configDir.resolve(CONFIG_PATH)
+    private val path: Path = FabricLoader.getInstance().configDir.resolve(PazMain.CONFIG_PATH)
 
-    private var data = Data()
+    private val defaultConfig = Data()
+    private var config = defaultConfig
 
     data class Data(
         var coopPlanting: Boolean = true,
+        var playerCreditForPlantKills: Boolean = false,
         var seedGrowTime: Int = 8100,
         var extraGrowTimePerSun: Int = 2100,
         var zenPotTimeReduction: Double = 0.75,
@@ -57,7 +57,7 @@ object PazConfig {
     )
 
     fun load() {
-        data = if (path.exists()) {
+        config = if (path.exists()) {
             try {
                 path.reader().use { gson.fromJson(it, Data::class.java) ?: Data() }
             } catch (exception: Exception) {
@@ -71,42 +71,49 @@ object PazConfig {
     fun save() {
         try {
             Files.createDirectories(path.parent)
-            path.writer().use { gson.toJson(data, it) }
+            path.writer().use { gson.toJson(config, it) }
         } catch (exception: Exception) {
             PazMain.LOGGER.error("Failed to save plantz config.", exception)
         }
     }
 
     val COFFEE_BUFF_DURATION: Int
-        get() = data.coffeeBuffDuration.coerceAtLeast(0)
+        get() = config.coffeeBuffDuration.coerceAtLeast(0)
 
     val SUN_BATTERY_MAX: Int
-        get() = data.sunBatteryMax.coerceAtLeast(0)
+        get() = config.sunBatteryMax.coerceAtLeast(0)
 
     val SHOW_DEBUG_INFO: Boolean
-        get() = data.showDebugInfo
+        get() = config.showDebugInfo
 
     val COOP_PLANTING: Boolean
-        get() = data.coopPlanting
+        get() = config.coopPlanting
+
+    val PLAYER_CREDIT_FOR_PLANT_KILLS: Boolean
+        get() = config.playerCreditForPlantKills
 
     val HYDRATION_SUN_REDUCTION: Double
-        get() = data.hydrationSunReduction.coerceIn(0.0, 1.0)
+        get() = config.hydrationSunReduction.coerceIn(0.0, 1.0)
 
     fun getGrowTime(sunCost: Int, zenBuff: Boolean): Int {
-        val time = data.seedGrowTime.coerceAtLeast(0) + (sunCost * data.extraGrowTimePerSun.coerceAtLeast(0))
-        return if (zenBuff) (time * data.zenPotTimeReduction.coerceIn(0.0, 1.0)).toInt() else time
+        val time = config.seedGrowTime.coerceAtLeast(0) + (sunCost * config.extraGrowTimePerSun.coerceAtLeast(0))
+        return if (zenBuff) (time * config.zenPotTimeReduction.coerceIn(0.0, 1.0)).toInt() else time
     }
 
-    fun getSunCost(entityId: Identifier?): Int {
-        if (entityId == null) return 0
-        return data.sunCosts[entityId.toString()]?.coerceAtLeast(0) ?: 0
-    }
     fun getSunCost(type: EntityType<*>?): Int {
         val id = type?.let { BuiltInRegistries.ENTITY_TYPE.getKey(it) }
         return getSunCost(id)
     }
+    fun getSunCost(entityId: Identifier?): Int {
+        if (entityId == null) return 0
+        val key = entityId.toString()
+        val value = config.sunCosts[key] // config
+            ?: defaultConfig.sunCosts[key] // default
+            ?: 0 // key not found
+        return value.coerceAtLeast(0)
+    }
 
     fun putDefaultSunCost(entityId: Identifier, sunCost: Int) {
-        data.sunCosts.putIfAbsent(entityId.toString(), sunCost.coerceAtLeast(0))
+        config.sunCosts.putIfAbsent(entityId.toString(), sunCost.coerceAtLeast(0))
     }
 }

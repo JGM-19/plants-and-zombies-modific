@@ -25,7 +25,8 @@
 ### Technical Changes
 - Leader Zombies can no longer spawn leaders as reinforcements.
 - Added configuration options.
-    - `coopPlanting` – toggle for co-op planting.
+    - `coopPlanting` – When enabled, other players can dig up and interact with other players' plants.
+    - `playerCreditForPlantKills` – When enabled, mobs killed by tamed plants will drop exp and player only drops.
     - `coffeeBuffDuration` – How many ticks the coffee buff lasts.
     - `sunCost` – A list of entity ids paired with an integer amount.
 	- `seedGrowTime` – The base time for growing seeds.
