@@ -21,7 +21,17 @@ import net.minecraft.world.DifficultyInstance
 import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.*
 import net.minecraft.world.entity.ai.control.MoveControl
+import net.minecraft.world.entity.ai.goal.MoveThroughVillageGoal
+import net.minecraft.world.entity.ai.goal.SpearUseGoal
+import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal
+import net.minecraft.world.entity.animal.golem.IronGolem
+import net.minecraft.world.entity.animal.turtle.Turtle
 import net.minecraft.world.entity.monster.zombie.Zombie
+import net.minecraft.world.entity.monster.zombie.ZombifiedPiglin
+import net.minecraft.world.entity.npc.villager.AbstractVillager
+import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.LevelReader
@@ -41,18 +51,26 @@ abstract class PazZombie(type: EntityType<out PazZombie>, level: Level) : Zombie
             pos: BlockPos,
             random: RandomSource
         ): Boolean {
-            val biome: Holder<Biome> = level.getBiome(pos)
-            val canSpawn = level.difficulty != Difficulty.PEACEFUL
-                    && (EntitySpawnReason.ignoresLightRequirements(spawnReason) || biome.`is`(PazTags.Biomes.DAY_SPAWNS) || isDarkEnoughToSpawn(level, pos, random))
+            if (level.difficulty == Difficulty.PEACEFUL) return false
 
+            val biome = level.getBiome(pos)
+            val isRaining = level.level.isRaining
             val inWater = level.getFluidState(pos).`is`(FluidTags.WATER)
 
-            return canSpawn &&
-                if (inWater)
-                    if (biome.`is`(PazTags.Biomes.WATER_SPAWNS)) (EntitySpawnReason.isSpawner(spawnReason) || (random.nextFloat() < 0.1f && pos.y > level.seaLevel-3))
-                    else false
-                else
-                    (checkMobSpawnRules(type, level, spawnReason, pos, random))
+            // light / day requirements
+            val canSpawn = (inWater && isRaining) || EntitySpawnReason.ignoresLightRequirements(spawnReason) || biome.`is`(PazTags.Biomes.DAY_SPAWNS) || isDarkEnoughToSpawn(level, pos, random)
+            if (!canSpawn) return false
+
+            // water spawning
+            if (inWater) {
+                val rainBonus = if (isRaining) 2.5f else 1f
+                val spawnChance = if (biome.`is`(PazTags.Biomes.WATER_SPAWNS)) 0.075f else 0.01f
+                return EntitySpawnReason.isSpawner(spawnReason) ||
+                        (random.nextFloat() < (spawnChance * rainBonus) && pos.y > level.seaLevel - 3)
+            }
+
+            // land spawning
+            return checkMobSpawnRules(type, level, spawnReason, pos, random)
         }
 
         val ZOMBIE_STATE: EntityDataAccessor<ZombieState> = SynchedEntityData.defineId<ZombieState>(PazZombie::class.java, DATA_ZOMBIE_STATE)
@@ -79,7 +97,17 @@ abstract class PazZombie(type: EntityType<out PazZombie>, level: Level) : Zombie
 
     override fun registerGoals() {
         super.registerGoals()
-        this.navigation
+    }
+
+    fun behaviourGoalsNoMelee() {
+        this.goalSelector.addGoal(2, SpearUseGoal<Zombie>(this, 1.0, 1.0, 10.0f, 2.0f))
+        this.goalSelector.addGoal(6, MoveThroughVillageGoal(this, 1.0, true, 4) { this.canBreakDoors() })
+        this.goalSelector.addGoal(7, WaterAvoidingRandomStrollGoal(this, 1.0))
+        this.targetSelector.addGoal(1, HurtByTargetGoal(this).setAlertOthers(ZombifiedPiglin::class.java))
+        this.targetSelector.addGoal(2, NearestAttackableTargetGoal(this, Player::class.java, true))
+        this.targetSelector.addGoal(3, NearestAttackableTargetGoal(this, AbstractVillager::class.java, false))
+        this.targetSelector.addGoal(3, NearestAttackableTargetGoal(this, IronGolem::class.java, true))
+        this.targetSelector.addGoal(5, NearestAttackableTargetGoal(this, Turtle::class.java, 10, true, false, Turtle.BABY_ON_LAND_SELECTOR))
     }
 
     var waterTime = -1
@@ -169,6 +197,7 @@ abstract class PazZombie(type: EntityType<out PazZombie>, level: Level) : Zombie
         if (canEquipDuckyInWater() && level.getBlockState(blockPosition()).fluidState.type == Fluids.WATER) {
             setItemSlot(EquipmentSlot.LEGS, PazItems.DUCKY_TUBE.defaultInstance)
             if (spawnReason != EntitySpawnReason.NATURAL) setDropChance(EquipmentSlot.LEGS, 0.0f)
+            else setDropChance(EquipmentSlot.LEGS, 0.125f)
         }
 
         return data
