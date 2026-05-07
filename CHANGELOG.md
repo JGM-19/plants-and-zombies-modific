@@ -30,6 +30,7 @@
 - Added configuration options.
     - `coopPlanting` – When enabled, other players can dig up and interact with other players' plants.
     - `playerCreditForPlantKills` – When enabled, mobs killed by tamed plants will drop exp and player only drops.
+    - `sunCostTamingThreshold` – Sun cost at which plants become significantly harder to tame. Plants with sun cost >= this value will have the lowest taming probability.
     - `coffeeBuffDuration` – How many ticks the coffee buff lasts.
     - `sunCost` – A list of entity ids paired with an integer amount.
 	- `seedGrowTime` – The base time for growing seeds.

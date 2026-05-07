@@ -10,6 +10,7 @@ import java.nio.file.Path
 import kotlin.io.path.exists
 import kotlin.io.path.reader
 import kotlin.io.path.writer
+import kotlin.math.pow
 
 object PazConfig {
     private val gson = GsonBuilder()
@@ -53,6 +54,7 @@ object PazConfig {
             "plantz:coffeebean"         to 3,
         ),
         var coffeeBuffDuration: Int = 60_000,
+        var sunCostTamingThreshold: Int = 30,
         var sunBatteryMax: Int = 320,
         var showDebugInfo: Boolean = false,
     )
@@ -115,6 +117,13 @@ object PazConfig {
             ?: defaultConfig.sunCosts[key] // default
             ?: 0 // key not found
         return value.coerceAtLeast(0)
+    }
+    fun getTameChance(type: EntityType<*>?): Double {
+        val a = config.sunCostTamingThreshold
+        val sunCost = getSunCost(type).coerceAtMost(a)
+        val weight = 3 // higher weight = harder to tame
+        val chance = ((a - sunCost).toDouble() / (a + sunCost).toDouble()).pow(weight).coerceIn(0.02, 1.0)
+        return chance
     }
 
     fun putDefaultSunCost(entityId: Identifier, sunCost: Int) {

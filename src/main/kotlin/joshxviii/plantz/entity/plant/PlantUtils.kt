@@ -92,7 +92,7 @@ fun Plant.processSunItem(player: Player, item: ItemStack, hand: InteractionHand,
         success = true
     }
     else if (!isTame) {// try to tame
-        if (random.nextFloat() < (1f - (PazConfig.getSunCost(type) / 14f))*0.2f) {
+        if (random.nextFloat() < PazConfig.getTameChance(type)) {
             tame(player)
             level.broadcastEntityEvent(this, 7.toByte())
         } else level.broadcastEntityEvent(this, 6.toByte())
