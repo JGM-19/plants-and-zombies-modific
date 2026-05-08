@@ -126,6 +126,7 @@ abstract class PazProjectile(
                 if (target is LivingEntity) {
                     val knockbackDirection = calculateHorizontalHurtKnockbackDirection(target, source)
                     target.knockback(knockback, -knockbackDirection.leftDouble(), -knockbackDirection.rightDouble())
+                    playSound(getHitSound(), 0.3f, 1.8f)
                     afterHitEntityEffect(target)
                 }
             }
@@ -137,7 +138,6 @@ abstract class PazProjectile(
             }
             piercingIgnoreEntityIds.add(target.id)
         }
-        this.playSound(getHitSound(), 0.4f, 1.8f)
         if (this.getPierceLevel() <= 0) this.discard()
     }
 
@@ -150,7 +150,7 @@ abstract class PazProjectile(
         this.deltaMovement = Vec3.ZERO
         if (!isInGround()) {
             this.setPierceLevel(0)
-            this.playSound(getHitSound(), 0.4f, 1.8f)
+            playSound(getHitSound(), 0.3f, 1.8f)
             afterHitBlockEffect(hitResult.blockPos)
             this.setInGround(true)
         }

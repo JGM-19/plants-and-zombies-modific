@@ -1,6 +1,7 @@
 package joshxviii.plantz.block
 
 import com.mojang.serialization.MapCodec
+import joshxviii.plantz.block.entity.GravestoneBlockEntity
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.util.RandomSource
@@ -9,10 +10,12 @@ import net.minecraft.world.item.context.BlockPlaceContext
 import net.minecraft.world.level.BlockGetter
 import net.minecraft.world.level.LevelReader
 import net.minecraft.world.level.ScheduledTickAccess
+import net.minecraft.world.level.block.BaseEntityBlock
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.HorizontalDirectionalBlock
 import net.minecraft.world.level.block.Rotation
 import net.minecraft.world.level.block.SimpleWaterloggedBlock
+import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.StateDefinition
 import net.minecraft.world.level.block.state.properties.BlockStateProperties
@@ -24,7 +27,7 @@ import net.minecraft.world.phys.shapes.CollisionContext
 import net.minecraft.world.phys.shapes.Shapes
 import net.minecraft.world.phys.shapes.VoxelShape
 
-class GravestoneBlock(properties: Properties) : HorizontalDirectionalBlock(properties), SimpleWaterloggedBlock  {
+class GravestoneBlock(properties: Properties) : BaseEntityBlock(properties), SimpleWaterloggedBlock  {
     companion object {
         val CODEC: MapCodec<GravestoneBlock> = simpleCodec(::GravestoneBlock)
         val SHAPE: VoxelShape = Util.make {
@@ -40,6 +43,10 @@ class GravestoneBlock(properties: Properties) : HorizontalDirectionalBlock(prope
 
     init {
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(WATERLOGGED, false))
+    }
+
+    override fun newBlockEntity(worldPosition: BlockPos, blockState: BlockState): BlockEntity {
+        return GravestoneBlockEntity(worldPosition, blockState)
     }
 
     override fun getShape(state: BlockState, level: BlockGetter, pos: BlockPos, context: CollisionContext): VoxelShape {

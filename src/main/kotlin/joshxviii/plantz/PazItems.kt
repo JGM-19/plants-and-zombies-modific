@@ -41,6 +41,7 @@ import net.minecraft.world.item.equipment.ArmorMaterials
 import net.minecraft.world.item.equipment.ArmorType
 import net.minecraft.world.item.equipment.EquipmentAssets
 import net.minecraft.world.item.equipment.Equippable
+import net.minecraft.world.level.block.ComposterBlock
 import net.minecraft.world.level.block.DispenserBlock
 import java.util.function.Function
 
@@ -201,6 +202,8 @@ object PazItems {
             builder.add(SUN, context.baseSmeltTime())
             builder.add(NEWSPAPER, context.baseSmeltTime())
         }
+
+        ComposterBlock.COMPOSTABLES.put(SEED_PACKET.asItem(), 1.0f)
 
         // Modify components
         ItemComponentTooltipProviderRegistryImpl.addLast(PazComponents.STORED_WATER)

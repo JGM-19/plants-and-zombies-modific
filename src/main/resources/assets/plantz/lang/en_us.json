@@ -30,7 +30,8 @@
   "message.plantz.cannot_survive": "This plant cannot survive here!",
   "message.plantz.not_yours": "You do not own this plant!",
   "message.plantz.not_enough_sun": "Not enough sun (%s/%s)",
-  "message.plantz.no_coffee_while_growing": "This plant is growing seeds!",
+  "message.plantz.growing": "This plant is growing seeds!",
+  "message.plantz.sleeping": "This plant is asleep!",
 
   "death.attack.zombie_eat": "%1$s was eaten by %2$s",
   "death.attack.zombie_smash": "%1$s was smashed by %2$s",

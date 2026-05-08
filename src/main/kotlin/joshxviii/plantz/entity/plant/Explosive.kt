@@ -4,8 +4,10 @@ import joshxviii.plantz.PazConfig
 import joshxviii.plantz.PazDamageTypes
 import joshxviii.plantz.PazDataSerializers.DATA_SWELL_DIR
 import joshxviii.plantz.PazSounds
+import net.minecraft.ChatFormatting
 import net.minecraft.core.Holder
 import net.minecraft.core.particles.ParticleTypes
+import net.minecraft.network.chat.Component
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.resources.ResourceKey
@@ -56,11 +58,15 @@ abstract class Explosive(type: EntityType<out Explosive>, level: Level) : Plant(
         if (level is ServerLevel) {
             // flint and steel interaction
             if (itemStack.`is`(Items.FLINT_AND_STEEL)) {
-                if (cooldown<0 && !isAsleep) {
+                if (cooldown<0) {
+                    if (isAsleep) {
+                        player.sendOverlayMessage(Component.translatable("message.plantz.sleeping").withStyle(ChatFormatting.RED))
+                        return InteractionResult.FAIL
+                    }
                     swellDir=2
                     playSound(SoundEvents.FLINTANDSTEEL_USE)
                     return InteractionResult.SUCCESS_SERVER
-                } else return InteractionResult.FAIL
+                }
             }
         }
         return super.mobInteract(player, hand)

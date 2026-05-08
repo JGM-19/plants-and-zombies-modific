@@ -1,18 +1,28 @@
 package joshxviii.plantz.item
 
+import joshxviii.plantz.PazBlocks
 import joshxviii.plantz.PazComponents
 import joshxviii.plantz.PazItems
 import joshxviii.plantz.item.component.StoredSun
 import net.minecraft.util.Mth
+import net.minecraft.world.InteractionResult
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.SlotAccess
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.ClickAction
 import net.minecraft.world.inventory.Slot
+import net.minecraft.world.item.BlockItem
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.context.UseOnContext
 
-class SunBatteryItem(properties: Properties) : Item(properties) {
+class SunBatteryItem(properties: Properties) : BlockItem(PazBlocks.SUN_BATTERY_BLOCK, properties) {
+
+    override fun useOn(context: UseOnContext): InteractionResult {
+        val player = context.player
+        //if (player?.isShiftKeyDown==true) return super.useOn(context)
+        return InteractionResult.PASS
+    }
 
     override fun isBarVisible(stack: ItemStack): Boolean {
         stack.get(PazComponents.STORED_SUN)?.let {

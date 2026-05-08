@@ -33,7 +33,7 @@ class WaterSpore(
     override fun afterHitEntityEffect(target: LivingEntity) {
     }
 
-    override fun getHitSound(): SoundEvent = SoundEvents.FISHING_BOBBER_SPLASH
+    override fun getHitSound(): SoundEvent = SoundEvents.AXOLOTL_SPLASH
 
     override fun onHit(hitResult: HitResult) {
         super.onHit(hitResult)

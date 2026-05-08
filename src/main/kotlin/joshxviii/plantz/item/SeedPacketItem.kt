@@ -5,7 +5,6 @@ import joshxviii.plantz.entity.plant.Plant
 import net.minecraft.ChatFormatting
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
-import net.minecraft.core.component.DataComponentMap
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
@@ -196,7 +195,7 @@ class SeedPacketItem(properties: Properties) : Item(properties) {
             PazEntities.COFFEE_BEAN -> {
                 when {
                     plant.isGrowingSeeds -> {
-                        player.sendOverlayMessage(Component.translatable("message.plantz.no_coffee_while_growing").withStyle(ChatFormatting.RED))
+                        player.sendOverlayMessage(Component.translatable("message.plantz.growing").withStyle(ChatFormatting.RED))
                         PacketInteractionResult.FAIL
                     }
                     cantAfford -> PacketInteractionResult.CANT_AFFORD
