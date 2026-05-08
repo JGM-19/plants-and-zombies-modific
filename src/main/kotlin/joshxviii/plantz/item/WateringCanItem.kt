@@ -14,13 +14,9 @@ import net.minecraft.tags.FluidTags
 import net.minecraft.util.Mth
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
-import net.minecraft.world.entity.Entity
-import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.LivingEntity
-import net.minecraft.world.entity.MoverType
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.BlockItem
-import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.ItemUseAnimation
 import net.minecraft.world.item.context.UseOnContext
@@ -31,8 +27,6 @@ import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.BlockStateProperties
 import net.minecraft.world.level.gameevent.GameEvent
 import net.minecraft.world.phys.HitResult
-import net.minecraft.world.phys.Vec3
-import org.apache.logging.log4j.core.net.Severity
 
 class WateringCanItem(properties: Properties) : BlockItem(PazBlocks.WATERING_CAN_BLOCK, properties) {
 
@@ -40,7 +34,6 @@ class WateringCanItem(properties: Properties) : BlockItem(PazBlocks.WATERING_CAN
         val itemStack = player.getItemInHand(hand)
         val storedWaterComponent = itemStack.get(PazComponents.STORED_WATER)
 
-        if (storedWaterComponent?.let { it.storedWater >= it.maxCapacity } == true) return InteractionResult.PASS
         val hitResult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.SOURCE_ONLY)
         if (hitResult.type == HitResult.Type.MISS) return InteractionResult.PASS
         else {
@@ -49,9 +42,27 @@ class WateringCanItem(properties: Properties) : BlockItem(PazBlocks.WATERING_CAN
                 if (!level.mayInteract(player, pos)) return InteractionResult.PASS
 
                 if (level.getFluidState(pos).`is`(FluidTags.WATER)) {
+                    if (storedWaterComponent?.let { it.storedWater >= it.maxCapacity } == true) return InteractionResult.PASS
                     itemStack.set(PazComponents.STORED_WATER, storedWaterComponent?.addWater())
                     level.gameEvent(player, GameEvent.FLUID_PICKUP, pos)
                     level.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 1.0f, 0.9f)
+                    return InteractionResult.SUCCESS
+                }
+                else if (level.getFluidState(pos).`is`(FluidTags.LAVA)) {
+                    if (storedWaterComponent?.let { it.storedWater <= 0 } == true) return InteractionResult.PASS
+                    itemStack.set(PazComponents.STORED_WATER, storedWaterComponent?.removeWater(2))
+                    level.setBlockAndUpdate(pos, Blocks.OBSIDIAN.defaultBlockState())
+                    level.gameEvent(player, GameEvent.FLUID_PLACE, pos)
+                    level.playSound(null, pos, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 1.0f, 0.9f)
+                    repeat(7) {
+                        level.addParticle(
+                            ParticleTypes.LARGE_SMOKE,
+                            (pos.x + player.random.nextFloat()).toDouble(),
+                            (pos.y + player.random.nextFloat()).toDouble(),
+                            (pos.z + player.random.nextFloat()).toDouble(),
+                            0.0, 0.0, 0.0
+                        )
+                    }
                     return InteractionResult.SUCCESS
                 }
             }

@@ -52,8 +52,8 @@ object PazSpawnPlacements {
         registerSpawnPlacement(PazEntities.DOOM_SHROOM, DoomShroom::checkDoomShroomSpawnRules)
 
         addBiomeSpawn(PazTags.Biomes.HAS_SEA_SHROOM, PazEntities.SEA_SHROOM,
-            weight = 9, minGroupSize = 1, maxGroupSize = 2)
-        registerSpawnPlacement(PazEntities.SEA_SHROOM, SeaShroom::checkSeaShroomSpawnRules)
+            weight = 2, minGroupSize = 1, maxGroupSize = 3)
+        registerSpawnPlacement(PazEntities.SEA_SHROOM, SeaShroom::checkSeaShroomSpawnRules, spawnPlacements = SpawnPlacementTypes.IN_WATER)
 
         addBiomeSpawn(PazTags.Biomes.HAS_ICE_PEASHOOTER, PazEntities.ICE_PEA_SHOOTER,
             weight = 5, minGroupSize = 1, maxGroupSize = 2)

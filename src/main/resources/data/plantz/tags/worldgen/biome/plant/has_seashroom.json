@@ -5,7 +5,7 @@
       "required": false
     },
     {
-      "id": "#c:is_ocean",
+      "id": "#c:is_deep_ocean",
       "required": false
     }
   ]

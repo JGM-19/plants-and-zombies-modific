@@ -17,6 +17,7 @@ import net.minecraft.world.entity.monster.Enemy
 import net.minecraft.world.entity.monster.zombie.Zombie
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.LevelAccessor
+import net.minecraft.world.level.LevelReader
 import net.minecraft.world.level.ServerLevelAccessor
 import net.minecraft.world.level.block.state.BlockState
 
@@ -30,9 +31,12 @@ class SeaShroom(type: EntityType<out Plant>, level: Level) : Plant(PazEntities.S
             pos: BlockPos,
             random: RandomSource
         ): Boolean {
+            val isRaining = level.level.isRaining
             val inWater = level.getFluidState(pos).`is`(FluidTags.WATER)
-            return EntitySpawnReason.isSpawner(spawnReason)
-                    || inWater
+            val rainBonus = if (isRaining) 2.25f else 1f
+
+            return EntitySpawnReason.isSpawner(spawnReason) ||
+                (inWater && random.nextFloat() < (0.1 * rainBonus) && pos.y > level.seaLevel - 3)
         }
     }
 

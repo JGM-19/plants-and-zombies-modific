@@ -33,7 +33,7 @@ class ExplodeGoal(
     }
 
     override fun canUse(): Boolean {
-        if (explosiveEntity.swellDir!=0) return true
+        if (explosiveEntity.swellDir>=0) return true
         if (!actionPredicate.test(explosiveEntity)) return false
         if ((explosiveEntity.isAsleep || explosiveEntity.isGrowingSeeds)) return false
         target = explosiveEntity.target

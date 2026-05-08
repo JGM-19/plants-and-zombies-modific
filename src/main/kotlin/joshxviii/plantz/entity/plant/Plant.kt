@@ -16,6 +16,7 @@ import joshxviii.plantz.entity.Sun
 import joshxviii.plantz.item.SeedPacketItem
 import net.minecraft.ChatFormatting
 import net.minecraft.core.BlockPos
+import net.minecraft.core.Direction
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.particles.BlockParticleOption
 import net.minecraft.core.particles.ParticleOptions
@@ -58,6 +59,7 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.LevelAccessor
+import net.minecraft.world.level.LevelReader
 import net.minecraft.world.level.LightLayer
 import net.minecraft.world.level.ServerLevelAccessor
 import net.minecraft.world.level.block.state.BlockState
@@ -292,6 +294,10 @@ abstract class Plant(type: EntityType<out Plant>, level: Level) : TamableAnimal(
         level: ServerLevel,
         partner: AgeableMob
     ): AgeableMob? { return this }
+    override fun checkSpawnObstruction(level: LevelReader): Boolean {
+        return if (canBreatheUnderwater()) level.isUnobstructed(this)
+        else super.checkSpawnObstruction(level)
+    }
 
     override fun canRide(vehicle: Entity): Boolean = false
     override fun isFood(itemStack: ItemStack): Boolean = false
@@ -552,7 +558,12 @@ abstract class Plant(type: EntityType<out Plant>, level: Level) : TamableAnimal(
         groupData: SpawnGroupData?
     ): SpawnGroupData? {
         state = PlantState.INIT
-        if (spawnReason == EntitySpawnReason.NATURAL) checkDespawn()
+        if (spawnReason == EntitySpawnReason.NATURAL) {
+            val yaw = Direction.getRandom(random).toYRot()
+            yHeadRot = yaw
+            yBodyRot = yaw
+            yRot = yaw
+        }
 
         return groupData
     }
