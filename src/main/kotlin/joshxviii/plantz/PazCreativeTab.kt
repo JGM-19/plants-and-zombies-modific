@@ -62,9 +62,9 @@ object PazCreativeTab {
                 //output.accept(PazItems.GNOME_SPAWN_EGG)
 
                 // items
+                output.accept(PazItems.SUN_BATTERY)
                 output.accept(PazItems.SUN)
                 output.accept(PazItems.SUN_BOTTLE)
-                //output.accept(PazItems.SUN_BATTERY)
                 output.accept(PazItems.WATERING_CAN)
                 output.accept(PazBlocks.PLANT_POT)
                 output.accept(PazBlocks.ZEN_PLANT_POT)
