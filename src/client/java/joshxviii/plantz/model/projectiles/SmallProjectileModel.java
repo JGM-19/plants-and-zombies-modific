@@ -10,11 +10,11 @@ import org.jetbrains.annotations.NotNull;
 
 import static joshxviii.plantz.UtilsKt.pazResource;
 
-public class SporeModel extends EntityModel<@NotNull ProjectileRenderState> {
-    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(pazResource("spore"), "main");
+public class SmallProjectileModel extends EntityModel<@NotNull ProjectileRenderState> {
+    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(pazResource("small_projectile"), "main");
     private final ModelPart body;
 
-    public SporeModel(ModelPart root) {
+    public SmallProjectileModel(ModelPart root) {
         super(root);
         this.body = root.getChild("body");
     }

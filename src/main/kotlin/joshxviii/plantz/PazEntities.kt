@@ -167,7 +167,7 @@ object PazEntities {
         eyeHeight = 0.3f,
         attributes = Plant.Companion.PlantAttributes(
             maxHealth = 12.0,
-            attackDamage = 0.75,
+            attackDamage = 0.5,
             followRange = 10.0,
         )
     )
@@ -217,11 +217,10 @@ object PazEntities {
     @JvmField val SEA_SHROOM: EntityType<SeaShroom> = registerPlant(
         "seashroom", EntityType.Builder.of(::SeaShroom, MobCategory.CREATURE),
         width = 0.5f,
-        height = 0.65f,
-        eyeHeight = 0.3f,
+        height = 0.5f,
         attributes = Plant.Companion.PlantAttributes(
             maxHealth = 12.0,
-            attackDamage = 0.75,
+            attackDamage = 0.5,
             followRange = 10.0,
         )
     )
@@ -386,6 +385,7 @@ object PazEntities {
     @JvmField val PEA_FIRE: EntityType<PeaFire> = registerProjectile("pea_fire", EntityType.Builder.of({_,l->PeaFire(l)}, MobCategory.MISC))
     @JvmField val NEEDLE: EntityType<Needle> = registerProjectile("needle", EntityType.Builder.of({_,l->Needle(l)}, MobCategory.MISC), width = 0.42f, height = 0.42f)
     @JvmField val SPORE: EntityType<Spore> = registerProjectile("spore", EntityType.Builder.of({_,l->Spore(l)}, MobCategory.MISC))
+    @JvmField val WATER_SPORE: EntityType<WaterSpore> = registerProjectile("water_spore", EntityType.Builder.of({_,l-> WaterSpore(l)}, MobCategory.MISC))
     @JvmField val CABBAGE: EntityType<Cabbage> = registerProjectile("cabbage", EntityType.Builder.of({_,l->Cabbage(l)}, MobCategory.MISC), width = 0.5f, height = 0.5f)
     @JvmField val KERNEL: EntityType<Kernel> = registerProjectile("kernel", EntityType.Builder.of({_,l->Kernel(l)}, MobCategory.MISC), width = 0.42f, height = 0.42f)
     @JvmField val BUTTER: EntityType<Butter> = registerProjectile("butter", EntityType.Builder.of({_,l->Butter(l)}, MobCategory.MISC), width = 0.75f, height = 0.5f)

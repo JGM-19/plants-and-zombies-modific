@@ -226,11 +226,13 @@ abstract class PazProjectile(
                 val s = 0.25f
                 this.level().addParticle(ParticleTypes.BUBBLE, p.x - m.x * s, p.y - m.y * s, p.z - m.z * s, m.x, m.y, m.z)
             }
-            inertia = 0.8f
-        } else inertia = 1.00f// No air drag so projectile calculations can be perfectly accurate
+             inertia = if (ignoreWaterDrag()) 1f else 0.8f
+        } else inertia = 1.00f// No air drag so projectile calculations can be accurate
 
         this.deltaMovement = m.scale(inertia.toDouble())
     }
+
+    open fun ignoreWaterDrag(): Boolean = false
 
     private fun handleFirstTickBubbleColumn() {
         if (this.firstTick) {

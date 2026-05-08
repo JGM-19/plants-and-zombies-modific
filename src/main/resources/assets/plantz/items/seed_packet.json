@@ -138,6 +138,13 @@
         }
       },
       {
+        "when": { "id": "plantz:seashroom" },
+        "model": {
+          "type": "minecraft:model",
+          "model": "plantz:item/seed_packet/seashroom"
+        }
+      },
+      {
         "when": { "id": "plantz:coffeebean" },
         "model": {
           "type": "minecraft:model",

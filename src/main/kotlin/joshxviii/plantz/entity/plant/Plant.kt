@@ -162,7 +162,10 @@ abstract class Plant(type: EntityType<out Plant>, level: Level) : TamableAnimal(
         set(value) = this.entityData.set(RECEIVED_SUN, value.coerceAtLeast(0))
     var receivedWater: Int
         get() = this.entityData.get(RECEIVED_WATER)
-        set(value) = this.entityData.set(RECEIVED_WATER, value.coerceAtLeast(0))
+        set(value) {
+            if (value>0) seedGrowCooldown = timeRequiredForSeeds()
+            this.entityData.set(RECEIVED_WATER, value.coerceAtLeast(0))
+        }
 
     var seedGrowCooldown: Int
         get() = this.entityData.get(SEED_GROW_COOLDOWN)
@@ -211,7 +214,6 @@ abstract class Plant(type: EntityType<out Plant>, level: Level) : TamableAnimal(
         }
         idleAnimationStartTick = this.random.nextInt(200, 240)
     }
-
 
     // disables body control
     override fun createBodyControl(): BodyRotationControl = object : BodyRotationControl(this) { override fun clientTick() {} }
@@ -572,7 +574,8 @@ abstract class Plant(type: EntityType<out Plant>, level: Level) : TamableAnimal(
                 if (success) {
                     // apply tool damage base on how damaged the plant was
                     itemStack.hurtAndBreak(4, player, hand.asEquipmentSlot())
-                    playSound(SoundEvents.ROOTED_DIRT_BREAK)
+                    playSound(if (getBlockBelow().fluidState.isFull) SoundEvents.BUCKET_EMPTY
+                    else SoundEvents.ROOTED_DIRT_BREAK)
                     level.sendParticles(BlockParticleOption(
                         ParticleTypes.BLOCK, getBlockBelow()),
                         x, y+0.05, z, 16, 0.25,0.0,0.25, 0.4)

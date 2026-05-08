@@ -4,6 +4,7 @@ import joshxviii.plantz.PazBlocks
 import joshxviii.plantz.PazEntities
 import joshxviii.plantz.ai.goal.ProjectileAttackGoal
 import joshxviii.plantz.entity.projectile.Spore
+import joshxviii.plantz.entity.projectile.WaterSpore
 import net.minecraft.core.BlockPos
 import net.minecraft.tags.FluidTags
 import net.minecraft.util.RandomSource
@@ -16,6 +17,7 @@ import net.minecraft.world.entity.monster.Enemy
 import net.minecraft.world.entity.monster.zombie.Zombie
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.LevelAccessor
+import net.minecraft.world.level.ServerLevelAccessor
 import net.minecraft.world.level.block.state.BlockState
 
 class SeaShroom(type: EntityType<out Plant>, level: Level) : Plant(PazEntities.SEA_SHROOM, level) {
@@ -23,15 +25,14 @@ class SeaShroom(type: EntityType<out Plant>, level: Level) : Plant(PazEntities.S
     companion object {
         fun checkSeaShroomSpawnRules(
             type: EntityType<out Plant>,
-            level: LevelAccessor,
+            level: ServerLevelAccessor,
             spawnReason: EntitySpawnReason,
             pos: BlockPos,
             random: RandomSource
         ): Boolean {
-            val blockBelow = level.getBlockState(pos.below())
-            val block = level.getBlockState(pos)
-            return checkValidSpawn(level, pos)
-                    && (blockBelow.`is`(PazBlocks.ZEN_PLANT_POT) || block.fluidState.`is`(FluidTags.WATER))
+            val inWater = level.getFluidState(pos).`is`(FluidTags.WATER)
+            return EntitySpawnReason.isSpawner(spawnReason)
+                    || inWater
         }
     }
 
@@ -40,7 +41,7 @@ class SeaShroom(type: EntityType<out Plant>, level: Level) : Plant(PazEntities.S
 
         this.goalSelector.addGoal(2, ProjectileAttackGoal(
             usingEntity = this,
-            projectileFactory = { Spore(level(), this) },
+            projectileFactory = { WaterSpore(level(), this) },
             cooldownTime = 20))
         this.targetSelector.addGoal(4, NearestAttackableTargetGoal(this, LivingEntity::class.java, 5, true, false) { target, level ->
             target !is Plant
@@ -53,7 +54,6 @@ class SeaShroom(type: EntityType<out Plant>, level: Level) : Plant(PazEntities.S
     override fun canBreatheUnderwater(): Boolean = true
 
     override fun canSurviveOn(block: BlockState): Boolean {
-        val blockAbove = this.level().getBlockState(this.blockPosition().above())
-        return block.`is`(PazBlocks.ZEN_PLANT_POT) || blockAbove.fluidState.`is`(FluidTags.WATER)
+        return block.`is`(PazBlocks.ZEN_PLANT_POT) || isInWater
     }
 }

@@ -56,9 +56,9 @@ object PazConfig {
         ),
         var coffeeBuffDuration: Int = 60_000,
         var sunCostTamingThreshold: Int = 30,
-        var plantCooldownEnabled: Boolean = true,
-        var plantCooldownTime: Int = 10,
-        var plantCooldownTimePerSun: Int = 15,
+        var plantCooldownEnabled: Boolean = false,
+        var plantCooldownTime: Double = 1.0,
+        var plantCooldownTimePerSun: Double = 1.75,
         var sunBatteryMax: Int = 320,
         var showDebugInfo: Boolean = false,
     )
@@ -113,9 +113,9 @@ object PazConfig {
         return if (zenBuff) (time * (1f - config.zenPotTimeReduction.coerceIn(0.0, 1.0))).toInt() else time
     }
 
-    fun getCooldownTime(sunCost: Int): Int {
-        val time = config.plantCooldownTime.coerceAtLeast(1) + (sunCost * config.plantCooldownTimePerSun.coerceAtLeast(0))
-        return time
+    fun getCooldownTime(sunCost: Int): Float {
+        val time = config.plantCooldownTime + (sunCost * config.plantCooldownTimePerSun)
+        return time.toFloat().coerceAtLeast(1f)
     }
 
     fun getSunCost(type: EntityType<*>?): Int {

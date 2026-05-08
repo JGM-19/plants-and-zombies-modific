@@ -63,7 +63,7 @@ abstract class PazZombie(type: EntityType<out PazZombie>, level: Level) : Zombie
 
             // water spawning
             if (inWater) {
-                val rainBonus = if (isRaining) 2.5f else 1f
+                val rainBonus = if (isRaining) 2.25f else 1f
                 val spawnChance = if (biome.`is`(PazTags.Biomes.WATER_SPAWNS)) 0.075f else 0.01f
                 return EntitySpawnReason.isSpawner(spawnReason) ||
                         (random.nextFloat() < (spawnChance * rainBonus) && pos.y > level.seaLevel - 3)

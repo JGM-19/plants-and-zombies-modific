@@ -119,7 +119,7 @@ abstract public class LivingEntityMixin implements PlantHeadAttachment {
         LivingEntity entity = (LivingEntity) (Object) this;
 
         var item = entity.getItemBySlot(EquipmentSlot.LEGS);
-        if (!item.is(PazItems.DUCKY_TUBE)) return;
+        if (!item.is(PazItems.DUCKY_TUBE) && !entity.is(PazTags.EntityTypes.PLANTABLE_ON_WATER)) return;
         if (entity instanceof Player player && player.getAbilities().flying) return;
         var fluidType = entity.level().getBlockState(BlockPos.containing(entity.position().relative(Direction.UP, entity.getBbHeight()*.5))).getFluidState().getType();
         if (fluidType == Fluids.EMPTY ) return;

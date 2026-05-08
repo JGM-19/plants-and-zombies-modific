@@ -1,36 +1,18 @@
 package joshxviii.plantz.entity.plant
 
-import joshxviii.plantz.PazComponents
-import joshxviii.plantz.PazConfig
-import joshxviii.plantz.PazDamageTypes
-import joshxviii.plantz.PazEntities
-import joshxviii.plantz.PazItems
-import joshxviii.plantz.PazSounds
-import joshxviii.plantz.getTotalSun
-import joshxviii.plantz.removeSunFromStorageAndInventory
+import joshxviii.plantz.*
 import net.minecraft.ChatFormatting
-import net.minecraft.core.Holder
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceKey
 import net.minecraft.server.level.ServerLevel
-import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundEvents
-import net.minecraft.util.random.WeightedList
 import net.minecraft.world.InteractionHand
-import net.minecraft.world.InteractionResult
-import net.minecraft.world.damagesource.DamageType
-import net.minecraft.world.entity.OwnableEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.ItemUtils
 import net.minecraft.world.item.Items
 import net.minecraft.world.item.alchemy.Potions
-import net.minecraft.world.level.ExplosionDamageCalculator
-import net.minecraft.world.level.Level
-import net.minecraft.world.level.SimpleExplosionDamageCalculator
-import java.util.Optional
 
 object PlantUtils {
 }
@@ -97,7 +79,6 @@ fun Plant.processWateringItem(player: Player, item: ItemStack, hand: Interaction
     }
     this.receivedWater+=waterAmount
     if (waterAmount>0) {
-        seedGrowCooldown = timeRequiredForSeeds()
         addParticlesAroundSelf()
         funnyBounce()
         return true

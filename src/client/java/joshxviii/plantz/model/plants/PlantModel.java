@@ -9,6 +9,8 @@ import net.minecraft.client.model.geom.ModelPart;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.security.Key;
+
 /**
  * @author Josh
  */
@@ -38,13 +40,25 @@ public class PlantModel extends EntityModel<@NotNull PlantRenderState> {
         bounceAnimation = PlantAnimations.bounce.bake(root);
     }
 
+    public KeyframeAnimation getProcessedInit(PlantRenderState state) {
+        return this.initAnimation;
+    };
+
+    public KeyframeAnimation getProcessedIdle(PlantRenderState state) {
+        return this.idleAnimation;
+    };
+
+    public KeyframeAnimation getProcessedSleep(PlantRenderState state) {
+        return this.sleepAnimation;
+    };
+
     @Override
     public void setupAnim(@NotNull PlantRenderState state) {
         super.setupAnim(state);
-        if (initAnimation!=null)     this.initAnimation.apply(state.getInitAnimationState(), state.ageInTicks);
-        if (idleAnimation!=null && !state.getCoolDownAnimationState().isStarted())     this.idleAnimation.apply(state.getIdleAnimationState(), state.ageInTicks);
+        if (initAnimation!=null)     getProcessedInit(state).apply(state.getInitAnimationState(), state.ageInTicks);
+        if (idleAnimation!=null && !state.getCoolDownAnimationState().isStarted()) getProcessedIdle(state).apply(state.getIdleAnimationState(), state.ageInTicks);
         if (actionAnimation!=null)   this.actionAnimation.apply(state.getActionAnimationState(), state.ageInTicks);
-        if (sleepAnimation!=null)    this.sleepAnimation.apply(state.getSleepAnimationState(), state.ageInTicks);
+        if (sleepAnimation!=null)    getProcessedSleep(state).apply(state.getSleepAnimationState(), state.ageInTicks);
         if (cooldownAnimation!=null && !state.getInitAnimationState().isStarted()) this.cooldownAnimation.apply(state.getCoolDownAnimationState(), state.ageInTicks);
         this.bounceAnimation.apply(state.getBounceAnimationState(), state.ageInTicks);
     }
