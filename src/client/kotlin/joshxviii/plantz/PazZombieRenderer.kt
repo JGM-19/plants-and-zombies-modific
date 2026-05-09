@@ -8,7 +8,6 @@ import joshxviii.plantz.entity.zombie.Gargantuar
 import joshxviii.plantz.entity.zombie.NewspaperZombie
 import joshxviii.plantz.entity.zombie.PazZombie
 import joshxviii.plantz.model.zombies.PazZombieModel
-import net.minecraft.client.Minecraft
 import net.minecraft.client.model.geom.ModelLayerLocation
 import net.minecraft.client.model.geom.ModelLayers
 import net.minecraft.client.model.geom.ModelPart
@@ -19,7 +18,6 @@ import net.minecraft.client.renderer.entity.ArmorModelSet
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.entity.state.ZombieRenderState
 import net.minecraft.client.renderer.state.level.CameraRenderState
-import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.Identifier
 import net.minecraft.world.entity.AnimationState
@@ -74,9 +72,7 @@ class PazZombieRenderer(
         (entity as PazZombie)
         (state as PazZombieRenderState)
         state.zombieState = entity.state
-        state.texturePath = BuiltInRegistries.ENTITY_TYPE.getKey(entity.type).path
         state.initAnimationState.copyFrom(entity.emergeAnimation)
-        state.magicName = entity.customName?.string
         if (entity is Gargantuar) {
             state.actionAnimationState.copyFrom(entity.smashAttackAnimation)
             state.specialAnimationState.copyFrom(entity.throwImpAnimation)
@@ -84,24 +80,28 @@ class PazZombieRenderer(
         if (entity is DiscoZombie) state.actionAnimationState.copyFrom(entity.summonAnimation)
         if (entity is AllStar) state.actionAnimationState.copyFrom(entity.chargeAnimation)
         if (entity is NewspaperZombie) state.isAngry = entity.isAngry()
-        state.texturePathExtra =
+        state.customName = entity.customName?.string ?: ""
+        state.textureExtra =
             when (entity) {
                 is Gargantuar -> if (entity.hasImp) "imp" else ""
                 is NewspaperZombie -> if (entity.isAngry()) "angry" else ""
-                else -> entity.getMagicName()
+                else -> ""
             }
     }
 
     override fun getTextureLocation(state: ZombieRenderState): Identifier {
         (state as PazZombieRenderState)
-        return state.getTextureLocation()
+        return state.getTextureLocation(PazZombieRenderState.TEXTURE_PATH, state.getSuffixes())
     }
 }
 
 class PazZombieRenderState : ZombieRenderState() {
-    var magicName: String? = null
-    var texturePath: String = "default"
-    var texturePathExtra: String = ""
+
+    companion object {
+        const val TEXTURE_PATH = "textures/entity/zombie"
+    }
+    var customName: String = ""
+    var textureExtra: String = ""
     var actionTime: Int = 0
     var isAngry: Boolean = false
     var zombieState: ZombieState = ZombieState.IDLE
@@ -109,26 +109,13 @@ class PazZombieRenderState : ZombieRenderState() {
     val actionAnimationState: AnimationState = AnimationState()
     val specialAnimationState: AnimationState = AnimationState()
 
-    // TODO create a common abstract render state for texture resolution
     fun getSuffixes(): MutableList<String> {
+        val magicName = this.isMagicName(customName)
         val suffixes = mutableListOf<String>().apply {
-            if (texturePathExtra.isNotEmpty()) add(texturePathExtra)
-            if (isBaby)   add("baby")
+            if (textureExtra.isNotEmpty())      add(textureExtra)
+            if (magicName.isNotEmpty())         add(magicName)
+            else if (isBaby)                    add("baby")
         }
         return suffixes
-    }
-
-    fun getTextureLocation(): Identifier {
-        val base = "textures/entity/zombie/${texturePath}/${texturePath}"
-        val rm = Minecraft.getInstance().resourceManager
-
-        val textureLocation = resolveTextureLocation(base, rm, getSuffixes())
-        return textureLocation?: pazResource("${base}.png")
-    }
-
-    fun getEmissiveTextureLocation(): Identifier? {
-        val base = "textures/entity/zombie/${texturePath}/${texturePath}"
-        val rm = Minecraft.getInstance().resourceManager
-        return resolveTextureLocation(base, rm, getSuffixes().apply { add("emissive") })
     }
 }

@@ -6,7 +6,6 @@ import joshxviii.plantz.entity.plant.Explosive
 import joshxviii.plantz.entity.plant.KernelPult
 import joshxviii.plantz.entity.plant.Plant
 import joshxviii.plantz.entity.plant.WallNut
-import net.minecraft.client.Minecraft
 import net.minecraft.client.model.EntityModel
 import net.minecraft.client.renderer.SubmitNodeCollector
 import net.minecraft.client.renderer.entity.EntityRendererProvider
@@ -18,7 +17,6 @@ import net.minecraft.client.renderer.rendertype.RenderType
 import net.minecraft.client.renderer.rendertype.RenderTypes
 import net.minecraft.client.renderer.state.level.CameraRenderState
 import net.minecraft.client.renderer.texture.OverlayTexture
-import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.Identifier
 import net.minecraft.util.Mth
@@ -96,7 +94,6 @@ class PlantRenderer(
         state.cooldown = entity.cooldown
         state.isAsleep = entity.isAsleep
         state.damagedAmount = entity.damagedPercent
-        state.texturePath = BuiltInRegistries.ENTITY_TYPE.getKey(entity.type).path
         state.initAnimationState.copyFrom(entity.initAnimationState)
         state.idleAnimationState.copyFrom(entity.idleAnimationState)
         state.actionAnimationState.copyFrom(entity.actionAnimationState)
@@ -104,7 +101,8 @@ class PlantRenderer(
         state.specialAnimation.copyFrom(entity.specialAnimation)
         state.sleepAnimationState.copyFrom(entity.sleepAnimationState)
         state.bounceAnimationState.copyFrom(entity.bounceAnimation)
-        state.texturePathExtra =
+        state.customName = entity.customName?.string ?: ""
+        state.textureExtra =
             when (entity) {
                 is WallNut -> when {
                     state.damagedAmount >= 0.75f -> "damage_medium"
@@ -112,12 +110,12 @@ class PlantRenderer(
                     else -> ""
                 }
                 is KernelPult -> if (entity.hasButterShot) "butter" else ""
-                else -> entity.getMagicName()
+                else -> ""
             }
     }
 
     override fun getTextureLocation(state: PlantRenderState): Identifier {
-        return state.getTextureLocation()
+        return state.getTextureLocation(PlantRenderState.TEXTURE_PATH, state.getSuffixes())
     }
 }
 
@@ -133,7 +131,7 @@ class EmissivePlantLayer<M : EntityModel<PlantRenderState>>(
         yRot: Float,
         xRot: Float
     ) {
-        val textureLocation = state.getEmissiveTextureLocation() ?: return
+        val textureLocation = state.getEmissiveTextureLocation(PlantRenderState.TEXTURE_PATH, state.getSuffixes()) ?: return
         val renderType = RenderTypes.eyes(textureLocation)
         submitNodeCollector.order(1).submitModel(this.parentModel, state, poseStack, renderType, lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor, null);
     }
@@ -143,14 +141,17 @@ class EmissivePlantLayer<M : EntityModel<PlantRenderState>>(
 
 
 class PlantRenderState : LivingEntityRenderState() {
+    companion object {
+        const val TEXTURE_PATH = "textures/entity/plant"
+    }
     var rotations: Quaternionf = Quaternionf()
     var swelling: Float = 0f
     var lastCooldownTime: Int = 0
     var cooldown: Int = 0
     var damagedAmount: Float = 0.0f
     var isAsleep: Boolean = false
-    var texturePath: String = "default"
-    var texturePathExtra: String = ""
+    var customName: String = ""
+    var textureExtra: String = ""
     var plantState: PlantState = PlantState.IDLE
     val initAnimationState: AnimationState = AnimationState()
     val idleAnimationState: AnimationState = AnimationState()
@@ -160,27 +161,16 @@ class PlantRenderState : LivingEntityRenderState() {
     val sleepAnimationState: AnimationState = AnimationState()
     val bounceAnimationState: AnimationState = AnimationState()
 
-    // TODO create a common abstract render state for texture resolution
     fun getSuffixes(): MutableList<String> {
+        val magicName = this.isMagicName(customName)
         val suffixes = mutableListOf<String>().apply {
-            if (texturePathExtra.isNotEmpty()) add(texturePathExtra)
-            if (isBaby)   add("baby")
-            if (isAsleep) add("sleep")
+            if (textureExtra.isNotEmpty())      add(textureExtra)
+            if (magicName.isNotEmpty())         add(magicName)
+            else {
+                if (isBaby)                         add("baby")
+                if (isAsleep)                       add("sleep")
+            }
         }
         return suffixes
-    }
-
-    fun getTextureLocation(): Identifier {
-        val base = "textures/entity/plant/${texturePath}/${texturePath}"
-        val rm = Minecraft.getInstance().resourceManager
-
-        val textureLocation = resolveTextureLocation(base, rm, getSuffixes())
-        return textureLocation?: pazResource("${base}.png")
-    }
-
-    fun getEmissiveTextureLocation(): Identifier? {
-        val base = "textures/entity/plant/${texturePath}/${texturePath}"
-        val rm = Minecraft.getInstance().resourceManager
-        return resolveTextureLocation(base, rm, getSuffixes().apply { add("emissive") })
     }
 }

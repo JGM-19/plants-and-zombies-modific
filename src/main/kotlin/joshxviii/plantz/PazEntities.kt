@@ -465,4 +465,10 @@ object PazEntities {
         val id = ResourceKey.create(Registries.ENTITY_TYPE, pazResource(name))
         return Registry.register(BuiltInRegistries.ENTITY_TYPE, id, builder.build(id))
     }
+
+    val MAGIC_NAMES = mapOf<EntityType<*>, String>(
+        CHOMPER      to "chester",
+        DISCO_ZOMBIE to "mj",
+        BROWN_COAT   to "tugboat"
+    )
 }

@@ -1,5 +1,6 @@
 package joshxviii.plantz
 
+import joshxviii.plantz.PazEntities.MAGIC_NAMES
 import joshxviii.plantz.PazMain.MODID
 import joshxviii.plantz.entity.plant.Chomper
 import joshxviii.plantz.entity.plant.Plant
@@ -200,33 +201,3 @@ fun Path?.canReachTarget(target: BlockPos?): Boolean {
 fun Path?.getEndPos(): BlockPos? = this?.endNode?.let { BlockPos(it.x, it.y, it.z) }
 
 fun PathNavigation.moveToBlockPos(blockPos: BlockPos, speedModifier: Double) = this.moveTo(blockPos.x.toDouble(), blockPos.y.toDouble(), blockPos.z.toDouble(), speedModifier)
-
-// MODEL RENDERING
-fun List<String>.permutationsDescending(): List<String> = buildList {
-    add(this@permutationsDescending.joinToString("_"))
-    for (i in size - 1 downTo 1) {
-        add(this@permutationsDescending.subList(0, i).joinToString(""))
-    }
-}
-
-fun LivingEntity.getMagicName(): String {
-    val name = this.customName?.string?.lowercase() ?: return ""
-    val magicName = name.let {
-        when (this) {
-            is Chomper -> "chester"
-            is DiscoZombie -> "mj"
-            is BrownCoat -> "tugboat"
-            else -> return ""
-        }
-    }
-    return magicName
-}
-
-fun resolveTextureLocation(base: String, rm: ResourceManager, suffixes: List<String> = listOf()): Identifier? {
-    for (suffix in suffixes.permutationsDescending()) {
-        if (suffix.isEmpty()) break
-        val candidate = pazResource("${base}_${suffix}.png")
-        if (rm.getResource(candidate).isPresent) return candidate
-    }
-    return null
-}

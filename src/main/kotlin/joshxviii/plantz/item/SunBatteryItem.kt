@@ -20,7 +20,7 @@ class SunBatteryItem(properties: Properties) : BlockItem(PazBlocks.SUN_BATTERY_B
 
     override fun useOn(context: UseOnContext): InteractionResult {
         val player = context.player
-        //if (player?.isShiftKeyDown==true) return super.useOn(context)
+        if (player?.isShiftKeyDown==true) return super.useOn(context)
         return InteractionResult.PASS
     }
 
