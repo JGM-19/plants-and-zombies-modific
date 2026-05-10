@@ -5,6 +5,7 @@ import joshxviii.plantz.block.entity.FlagBlockEntity
 import joshxviii.plantz.block.entity.GravestoneBlockEntity
 import joshxviii.plantz.block.entity.MailboxBlockEntity
 import joshxviii.plantz.block.entity.SunBatteryBlockEntity
+import joshxviii.plantz.block.entity.TimeMachineBlockEntity
 import joshxviii.plantz.item.component.BlocksProjectileDamage
 import net.fabricmc.fabric.api.`object`.builder.v1.block.entity.FabricBlockEntityTypeBuilder
 import net.fabricmc.fabric.api.`object`.builder.v1.world.poi.PoiHelper
@@ -85,7 +86,22 @@ object PazBlocks {
         SUN_BATTERY_BLOCK
     )
     @JvmField val SUN_BATTERY_POI = PoiHelper.register(pazResource("sun_battery"), 8, 16, SUN_BATTERY_BLOCK)
-
+    @JvmField val TIME_MACHINE: Block = registerBlock(
+        "time_machine",
+        BlockBehaviour.Properties.of()
+            .sound(SoundType.COPPER_GRATE)
+            .strength(0.7F)
+            .noOcclusion()
+            .pushReaction(PushReaction.BLOCK)
+            .lightLevel(TimeMachineBlock.LIGHT_EMISSION),
+        ::TimeMachineBlock,
+        null
+    )
+    val TIME_MACHINE_ENTITY: BlockEntityType<TimeMachineBlockEntity> = registerBlockEntity(
+        "time_machine",
+        ::TimeMachineBlockEntity,
+        TIME_MACHINE
+    )
 
     @JvmField val MAILBOX: Block = registerBlock("mailbox", mailboxProperties(), ::MailboxBlock)
     @JvmField val LIGHT_GRAY_MAILBOX: Block = registerBlock("light_gray_mailbox", mailboxProperties(MapColor.COLOR_LIGHT_GRAY), {MailboxBlock(it, DyeColor.LIGHT_GRAY)})

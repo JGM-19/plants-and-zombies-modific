@@ -36,9 +36,10 @@ public class ZombieMixin {
     static private final String LEADER_MODIFIER_ID = "leader_zombie_bonus";
 
     @ModifyArgs(method = "hurtServer", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/monster/Monster;hurtServer(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;F)Z"))
-    private void updateDamage(Args args) {// exploding plants deal 999 dmg
+    private void updateDamage(Args args) {// exploding plants deal 100 dmg
         DamageSource source = args.get(1);
-        if (source.is(PazDamageTypes.PLANT_AOE)) args.set(2, 999F);
+        float damage = args.get(2);
+        if (source.is(PazDamageTypes.PLANT_AOE)) args.set(2, damage*3f);
     }
 
     @Inject(method = "hurtServer", at = @At("HEAD"), cancellable = true)

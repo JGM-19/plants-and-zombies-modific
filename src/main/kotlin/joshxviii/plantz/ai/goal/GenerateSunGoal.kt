@@ -9,7 +9,7 @@ import java.util.function.Predicate
 
 class GenerateSunGoal(
     usingEntity: Plant,
-    cooldownTime: Int = 680,
+    cooldownTime: Int = 900,
     actionDelay: Int = 0,
     actionStartEffect: () -> Unit = {},
     actionEndEffect: () -> Unit = {},

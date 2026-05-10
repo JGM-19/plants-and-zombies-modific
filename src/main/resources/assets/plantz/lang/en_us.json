@@ -82,6 +82,7 @@
   "item.plantz.seed_packet": "Empty Seed Packet",
   "item.plantz.seed_packet.entity": "%s Seeds",
 
+  "item.plantz.time_machine": "Time Machine",
   "item.plantz.gravestone": "Gravestone",
   "item.plantz.mailbox": "Mailbox",
   "item.plantz.light_gray_mailbox": "Light Gray Mailbox",
@@ -123,6 +124,7 @@
 
   "jukebox_song.plantz.grassy_groove": "joshxviii - Grassy Groove",
 
+  "block.plantz.time_machine": "Time Machine",
   "block.plantz.mailbox": "Mailbox",
   "block.plantz.light_gray_mailbox": "Light Gray Mailbox",
   "block.plantz.gray_mailbox": "Gray Mailbox",
