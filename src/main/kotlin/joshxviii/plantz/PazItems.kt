@@ -199,7 +199,7 @@ object PazItems {
     fun initialize() {
 
         FuelValueEvents.BUILD.register { builder, context ->
-            builder.add(SUN, context.baseSmeltTime())
+            builder.add(SUN, (context.baseSmeltTime()*0.5).toInt())
             builder.add(NEWSPAPER, context.baseSmeltTime())
         }
 

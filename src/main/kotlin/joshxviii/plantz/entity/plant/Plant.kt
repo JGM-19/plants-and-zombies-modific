@@ -85,13 +85,14 @@ abstract class Plant(type: EntityType<out Plant>, level: Level) : TamableAnimal(
             random: RandomSource
         ): Boolean {
             val blockBelow = level.getBlockState(pos.below())
-            val isValid = checkValidSpawn(level, pos) && blockBelow.`is`(PLANTABLE)
+            val isValid = checkValidSpawn(level, pos) && blockBelow.`is`(PLANTABLE) && pos.y > level.seaLevel - 8
             return isValid
         }
 
+        // ensure plant groups are spread out and not clumped too close together
         fun checkValidSpawn(level: LevelAccessor, pos: BlockPos): Boolean {
             val blockAtPos = level.getBlockState(pos)
-            return level.getEntitiesOfClass(Plant::class.java, AABB(pos).inflate(32.0)) { it.tickCount > 0 }.isEmpty()
+            return level.getEntitiesOfClass(Plant::class.java, AABB(pos).inflate(38.0)) { it.tickCount > 0 }.isEmpty()
                     && blockAtPos.getCollisionShape(level, pos.above()).isEmpty
         }
 
@@ -470,7 +471,7 @@ abstract class Plant(type: EntityType<out Plant>, level: Level) : TamableAnimal(
      * @return the amount of unused sun.
      */
     fun sunHeal(sunAmount: Int = 1): Boolean {
-        val healingMultiplier = 2.0f
+        val healingMultiplier = 4f
         val healingAmount = sunAmount * healingMultiplier
         val success = health < maxHealth
         heal(healingAmount)

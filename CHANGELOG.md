@@ -1,13 +1,17 @@
 # Changelog 1.5
 - Added Solider Zombie
 - Added Dye Blaster
-- Added Solar Battery
-	- Can store sun and will automatically use sun when planting or interacting with Plants.
 - Added Gravestone Block
 	- Zombies will emerge from the ground near the gravestone during the night.
 - Added The Graveyard biome
 ### Technical Changes
 
+# Changelog 1.4.1
+- Adjusted spawn rates and drop chances.
+- Reduced sun fuel amount by half.
+- Disco zombie can now only spawn backup when there are < 3 backup dances nearby rather than < 4
+- Updated list of projectiles that wallnut can deflect.
+- Increased the amount of healing sun gives to plants.
 
 # Changelog 1.4
 - Added Doom-Shroom

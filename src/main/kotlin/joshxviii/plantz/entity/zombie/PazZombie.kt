@@ -61,8 +61,8 @@ abstract class PazZombie(type: EntityType<out PazZombie>, level: Level) : Zombie
 
             // water spawning
             if (inWater) {
-                val rainBonus = if (isRaining) 2.25f else 1f
-                val spawnChance = if (biome.`is`(PazTags.Biomes.WATER_SPAWNS)) 0.075f else 0.01f
+                val rainBonus = if (isRaining) 2.75f else 1.25f
+                val spawnChance = if (biome.`is`(PazTags.Biomes.WATER_SPAWNS)) 0.085f else 0.015f
                 return EntitySpawnReason.isSpawner(spawnReason) ||
                         (random.nextFloat() < (spawnChance * rainBonus) && pos.y > level.seaLevel - 3)
             }
@@ -195,7 +195,7 @@ abstract class PazZombie(type: EntityType<out PazZombie>, level: Level) : Zombie
         if (canEquipDuckyInWater() && level.getBlockState(blockPosition()).fluidState.type == Fluids.WATER) {
             setItemSlot(EquipmentSlot.LEGS, PazItems.DUCKY_TUBE.defaultInstance)
             if (spawnReason != EntitySpawnReason.NATURAL) setDropChance(EquipmentSlot.LEGS, 0.0f)
-            else setDropChance(EquipmentSlot.LEGS, 0.125f)
+            else setDropChance(EquipmentSlot.LEGS, 0.15f)
         }
 
         return data

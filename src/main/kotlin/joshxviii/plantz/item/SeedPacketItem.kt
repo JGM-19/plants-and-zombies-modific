@@ -11,7 +11,7 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvents
-import net.minecraft.tags.FluidTags
+import net.minecraft.stats.Stats
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.entity.EntitySpawnReason
@@ -21,11 +21,13 @@ import net.minecraft.world.entity.TamableAnimal
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.SpawnEggItem
 import net.minecraft.world.item.component.TypedEntityData
 import net.minecraft.world.item.component.UseCooldown
 import net.minecraft.world.item.context.UseOnContext
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.LiquidBlock
 import net.minecraft.world.level.gameevent.GameEvent
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.HitResult
@@ -67,50 +69,39 @@ class SeedPacketItem(properties: Properties) : Item(properties) {
         val entityType = component?.type()
         val waterPlaceable = entityType!=null && BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entityType).`is`(PazTags.EntityTypes.PLANTABLE_ON_WATER)
 
-        if (waterPlaceable) {// check water result first
-            val waterHitResult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.SOURCE_ONLY)
-            if (waterHitResult.type == HitResult.Type.MISS) return InteractionResult.PASS
-            else {
-                if (waterHitResult.type == HitResult.Type.BLOCK) {
-                    val pos: BlockPos = waterHitResult.blockPos
+        if (!waterPlaceable) return InteractionResult.PASS
+        val hitResult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.SOURCE_ONLY)
+        if (hitResult.type != HitResult.Type.BLOCK) return InteractionResult.PASS
+        else if (level is ServerLevel) {
+            val pos: BlockPos = hitResult.blockPos
+            if (level.getBlockState(pos).block !is LiquidBlock) return InteractionResult.PASS
+            else if (level.mayInteract(player, pos) && player.mayUseItemAt(pos, hitResult.direction, itemStack)) {
+                val result = tryPlant(level, player, itemStack, pos, UseOnContext(player, hand, hitResult).clickedFace, Direction.UP, checkWater = true)
+                if (result === InteractionResult.SUCCESS) player.awardStat(Stats.ITEM_USED.get(this))
 
-                    if (!level.mayInteract(player, pos)) return InteractionResult.PASS
-
-                    if (level.getFluidState(pos).`is`(FluidTags.WATER)) {
-                        UseOnContext(player, hand, waterHitResult).let {
-                            return tryPlant(level, player, entityType, itemStack, pos.above(), Direction.UP, it.horizontalDirection, checkWater = true)
-                        }
-                    }
-                }
-            }
+                return result
+            } else return InteractionResult.FAIL
         }
-        // check block result
-        val blockHitResult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE)
-        if (blockHitResult.type == HitResult.Type.MISS) return InteractionResult.PASS
-        else {
-            if (blockHitResult.type == HitResult.Type.BLOCK) {
-                val pos: BlockPos = blockHitResult.blockPos
-                if (!level.mayInteract(player, pos)) return InteractionResult.PASS
-                UseOnContext(player, hand, blockHitResult).let {
-                    if (entityType==null) {
-                        player.sendOverlayMessage(Component.translatable("message.plantz.empty_packet").withStyle(ChatFormatting.RED))
-                        return InteractionResult.FAIL
-                    }
-                    return tryPlant(level, player, entityType, itemStack, pos, it.clickedFace, it.horizontalDirection)
-                }
-            }
-        }
-        return InteractionResult.PASS
+        return InteractionResult.SUCCESS
     }
 
     override fun useOn(context: UseOnContext): InteractionResult {
-        return InteractionResult.PASS
+        val level: Level = context.level
+        if (level !is ServerLevel) return InteractionResult.SUCCESS
+        else {
+            val itemStack = context.itemInHand
+            val pos: BlockPos = context.clickedPos
+            val clickedFace: Direction = context.clickedFace
+            val blockState = level.getBlockState(pos)
+            val spawnPos = if (blockState.getCollisionShape(level, pos).isEmpty) pos else pos.relative(clickedFace)
+
+            return tryPlant(level, context.player, itemStack, spawnPos, clickedFace, context.horizontalDirection)
+        }
     }
 
     fun tryPlant(
         level: Level,
         player: Player?,
-        entityType: EntityType<*>,
         itemStack: ItemStack,
         pos: BlockPos,
         face: Direction,
@@ -118,6 +109,9 @@ class SeedPacketItem(properties: Properties) : Item(properties) {
         checkWater: Boolean = false
     ): InteractionResult {
         if (level !is ServerLevel || player == null) return InteractionResult.PASS
+
+        val component = itemStack.get(DataComponents.ENTITY_DATA)
+        val entityType = component?.type()
 
         val spawnPos = if (level.getBlockState(pos).getCollisionShape(level, pos).isEmpty) pos
         else pos.relative(face)
@@ -131,7 +125,7 @@ class SeedPacketItem(properties: Properties) : Item(properties) {
             return InteractionResult.FAIL
         }
 
-        val entity = entityType.create(
+        val entity = entityType?.create(
             level,
             EntityType.createDefaultStackConfig(level, itemStack, player),
             spawnPos,
@@ -181,7 +175,7 @@ class SeedPacketItem(properties: Properties) : Item(properties) {
         if (entity is TamableAnimal) entity.tame(player)
         level.gameEvent(player, GameEvent.ENTITY_PLACE, spawnPos)
 
-        return InteractionResult.SUCCESS_SERVER
+        return InteractionResult.SUCCESS
     }
 
     // seed packet interaction with plants

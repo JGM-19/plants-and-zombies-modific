@@ -50,6 +50,7 @@ object LootInjector {
         BuiltInLootTables.FISHING_FISH,
         BuiltInLootTables.FISHING_TREASURE,
         BuiltInLootTables.BASTION_TREASURE,
+        BuiltInLootTables.BASTION_OTHER,
     ).apply { addAll(villageHouseBuiltInLootTables) }
 
     private val injectionIds = injections.map {it.identifier()}.toSet()

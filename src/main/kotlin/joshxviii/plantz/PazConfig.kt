@@ -31,6 +31,12 @@ object PazConfig {
         var zenPotTimeReduction: Double = 0.25,
         var hydrationSunReduction: Double = 0.5,
         var plantPotDamageReduction: Double = 0.5,
+        var coffeeBuffDuration: Int = 48_000,
+        var sunCostTamingThreshold: Int = 30,
+        var plantCooldownEnabled: Boolean = false,
+        var plantCooldownTime: Double = 4.0,
+        var plantCooldownTimePerSun: Double = 2.5,
+        var solarBatteryMax: Int = 512,
         var sunCosts: MutableMap<String, Int> = mutableMapOf(
             "plantz:sunflower"          to 5,
             "plantz:peashooter"         to 5,
@@ -54,12 +60,6 @@ object PazConfig {
             "plantz:seashroom"          to 0,
             "plantz:coffeebean"         to 3,
         ),
-        var coffeeBuffDuration: Int = 48_000,
-        var sunCostTamingThreshold: Int = 30,
-        var plantCooldownEnabled: Boolean = false,
-        var plantCooldownTime: Double = 4.0,
-        var plantCooldownTimePerSun: Double = 2.5,
-        var solarBatteryMax: Int = 320,
         var showDebugInfo: Boolean = false,
     )
 

@@ -64,7 +64,7 @@ object PazEntities {
         width = 1.0f,
         height = 1.1f,
         attributes = Plant.Companion.PlantAttributes(
-            maxHealth = 40.0,
+            maxHealth = 50.0,
         )
     )
     @JvmField val CHOMPER: EntityType<Chomper> = registerPlant(
@@ -72,7 +72,7 @@ object PazEntities {
         EntityType.Builder.of(::Chomper, MobCategory.CREATURE),
         height = 1.5f,
         attributes = Plant.Companion.PlantAttributes(
-            maxHealth = 35.0,
+            maxHealth = 30.0,
             attackDamage = 10.0,
             attackKnockback = 0.15,
             followRange = 4.75,

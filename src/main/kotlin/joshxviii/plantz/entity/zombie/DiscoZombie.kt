@@ -117,7 +117,7 @@ class DiscoZombie(type: EntityType<out DiscoZombie>, level: Level) : PazZombie(t
         override fun canUse(): Boolean {
             if (summoner.summoningTime>0) return true
             val nearbyBackupDancers: Int = getServerLevel(summoner.level()).getNearbyEntities(BackupDancer::class.java, backupTargeting, summoner, summoner.boundingBox.inflate(16.0)).size
-            return summoner.isAggressive && !summoner.isDeadOrDying && (summoner.target?.isAlive == true) && nearbyBackupDancers < 4
+            return summoner.isAggressive && !summoner.isDeadOrDying && (summoner.target?.isAlive == true) && nearbyBackupDancers < 3
         }
 
         override fun tick() {

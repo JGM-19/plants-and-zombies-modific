@@ -33,7 +33,7 @@ class SeaShroom(type: EntityType<out Plant>, level: Level) : Plant(PazEntities.S
             val rainBonus = if (isRaining) 2.25f else 1f
 
             return EntitySpawnReason.isSpawner(spawnReason) ||
-                (inWater && random.nextFloat() < (0.1 * rainBonus) && pos.y > level.seaLevel - 3)
+                (inWater && random.nextFloat() < (0.075 * rainBonus) && pos.y > level.seaLevel - 3)
         }
     }
 
@@ -55,6 +55,6 @@ class SeaShroom(type: EntityType<out Plant>, level: Level) : Plant(PazEntities.S
     override fun canBreatheUnderwater(): Boolean = true
 
     override fun canSurviveOn(block: BlockState): Boolean {
-        return block.`is`(PazBlocks.ZEN_PLANT_POT) || isInWater
+        return block.`is`(PazBlocks.ZEN_PLANT_POT) || level().getBlockState(blockPosition()).fluidState.`is`(FluidTags.WATER)
     }
 }

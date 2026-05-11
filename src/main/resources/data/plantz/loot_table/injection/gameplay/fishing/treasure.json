@@ -11,22 +11,7 @@
             {
               "type": "minecraft:item",
               "name": "plantz:watering_can",
-              "weight": 3
-            },
-            {
-              "type": "minecraft:item",
-              "name": "plantz:seed_packet",
-              "weight": 4,
-              "functions": [
-                {
-                  "function": "minecraft:set_components",
-                  "components": {
-                    "minecraft:entity_data": {
-                      "id": "plantz:seashroom"
-                    }
-                  }
-                }
-              ]
+              "weight": 10
             }
           ],
           "functions": [
@@ -41,7 +26,7 @@
       "conditions": [
         {
           "condition": "minecraft:random_chance",
-          "chance": 0.17
+          "chance": 0.175
         }
       ]
     }
