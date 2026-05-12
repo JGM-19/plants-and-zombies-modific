@@ -1,13 +1,9 @@
 package joshxviii.plantz.gui
 
 import com.mojang.blaze3d.platform.cursor.CursorTypes
-import joshxviii.plantz.PazMain
-import joshxviii.plantz.PazMenus
 import joshxviii.plantz.inventory.MailboxMenu
-import joshxviii.plantz.networking.SendMailPayload
+import joshxviii.plantz.networking.SendMailRequestPayload
 import joshxviii.plantz.pazResource
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
@@ -15,7 +11,6 @@ import net.minecraft.client.gui.components.EditBox
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.client.input.KeyEvent
 import net.minecraft.client.input.MouseButtonEvent
-import net.minecraft.client.renderer.LevelEventHandler
 import net.minecraft.client.renderer.RenderPipelines
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.Identifier
@@ -25,8 +20,8 @@ import net.minecraft.world.entity.player.Inventory
 class MailboxScreen(
     val menu: MailboxMenu,
     val inventory: Inventory,
-    title: Component,
-) : AbstractContainerScreen<MailboxMenu>(menu, inventory, title, 176, 180) {
+    val mailboxTitle: Component = Component.empty(),
+) : AbstractContainerScreen<MailboxMenu>(menu, inventory, mailboxTitle, 176, 180) {
     private lateinit var addressSearch: EditBox
     private lateinit var sendButton: Button
     private val addressButtons = mutableListOf<AddressButton>()
@@ -80,14 +75,13 @@ class MailboxScreen(
         val yo = (height - imageHeight) / 2
         addressSearch = initSearchBar(xo+53, yo+17)
         sendButton = initSendButton(xo+18, yo+55)
-        menu.registerUpdateListener {
-            containerChanged()
-        }
+        menu.slotUpdateListener = { containerChanged() }
+        menu.mailboxListUpdateListener = { containerChanged() }
         rebuildAddressButtons()
     }
 
     private fun rebuildAddressButtons() {
-        menu.refreshMailboxList()
+        menu.updateFilteredMailboxes()
         addressButtons.forEach { removeWidget(it) }
         addressButtons.clear()
 
@@ -100,7 +94,7 @@ class MailboxScreen(
             val mailbox = menu.getMailbox(mailboxIndex)
             if (mailbox != null) {
                 val button = AddressButton(
-                    address = mailbox,
+                    mailboxData = mailbox,
                     buttonX = xo+52,
                     buttonY = yo+28 + i * 14,
                     clickAction = {
@@ -174,7 +168,7 @@ class MailboxScreen(
 
     fun onSendPressed() {
         val targetMailbox = menu.getMailbox(menu.selectedMailboxIndex) ?: return
-        ClientPlayNetworking.send(SendMailPayload(targetMailbox.blockPos))
+        ClientPlayNetworking.send(SendMailRequestPayload(targetMailbox.blockPos))
     }
 
     fun onSearchUpdated(searchString: String) {
@@ -192,9 +186,9 @@ class MailboxScreen(
     }
 
     override fun resize(width: Int, height: Int) {
-        val oldEdit: String = addressSearch.value
+        val oldEditAddress: String = addressSearch.value
         this.init(width, height)
-        addressSearch.setValue(oldEdit)
+        addressSearch.setValue(oldEditAddress)
     }
 
     private fun isScrollBarActive(): Boolean = menu.filteredMailboxes.size > 4

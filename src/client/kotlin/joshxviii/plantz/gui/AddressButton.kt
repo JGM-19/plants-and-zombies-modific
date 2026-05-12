@@ -1,5 +1,6 @@
 package joshxviii.plantz.gui
 
+import joshxviii.plantz.MailboxData
 import joshxviii.plantz.block.entity.MailboxBlockEntity
 import joshxviii.plantz.pazResource
 import net.minecraft.client.gui.GuiGraphicsExtractor
@@ -10,20 +11,20 @@ import net.minecraft.network.chat.MutableComponent
 import net.minecraft.resources.Identifier
 
 /**
- * Button to populate list with
+ * Address button used to populate list in mailbox gui
  */
 class AddressButton(
-    val address: MailboxBlockEntity,
+    val mailboxData: MailboxData,
     buttonX: Int,
     buttonY: Int,
     clickAction: OnPress,
     enabledRequirement: ((button: PazButton) -> Boolean) = { true },
     clickRequirement: ((button: PazButton) -> Boolean) = enabledRequirement,
-) : PazButton(buttonX, buttonY, 97, 14, clickAction, ADDRESS, ADDRESS_HIGHLIGHTED, ADDRESS_SELECTED, enabledRequirement, clickRequirement, address.name) {
+) : PazButton(buttonX, buttonY, 97, 14, clickAction, ADDRESS, ADDRESS_HIGHLIGHTED, ADDRESS_SELECTED, enabledRequirement, clickRequirement, mailboxData.name) {
     val posText: MutableComponent =
-        Component.literal("■").withColor(address.color.textColor)
+        Component.literal("■").withColor(mailboxData.color)
             .append(CommonComponents.space())
-            .append(Component.translatable("container.plantz.mailbox_coords", address.blockPos.x, address.blockPos.y, address.blockPos.z).withColor(0xFFFFFFF))
+            .append(Component.translatable("container.plantz.mailbox_coords", mailboxData.blockPos.x, mailboxData.blockPos.y, mailboxData.blockPos.z).withColor(0xFFFFFFF))
 
     init {
         setTooltip(Tooltip.create(posText))

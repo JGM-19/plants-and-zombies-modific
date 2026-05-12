@@ -1,6 +1,5 @@
 package joshxviii.plantz.networking
 
-import joshxviii.plantz.PazCriteria
 import joshxviii.plantz.block.MailboxState
 import joshxviii.plantz.block.entity.MailboxBlockEntity
 import joshxviii.plantz.inventory.MailboxMenu
@@ -15,26 +14,26 @@ import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.item.ItemStack
 
-data class SendMailPayload(val targetPos: BlockPos) : CustomPacketPayload {
+data class SendMailRequestPayload(val targetPos: BlockPos) : CustomPacketPayload {
 
     companion object {
-        val ID: CustomPacketPayload.Type<SendMailPayload> = CustomPacketPayload.Type(pazResource("send_mail"))
+        val ID: CustomPacketPayload.Type<SendMailRequestPayload> = CustomPacketPayload.Type(pazResource("send_mail_request"))
 
-        val STREAM_CODEC: StreamCodec<RegistryFriendlyByteBuf, SendMailPayload> =
+        val STREAM_CODEC: StreamCodec<RegistryFriendlyByteBuf, SendMailRequestPayload> =
             StreamCodec.composite(
                 BlockPos.STREAM_CODEC,
-                SendMailPayload::targetPos,
-                ::SendMailPayload
+                SendMailRequestPayload::targetPos,
+                ::SendMailRequestPayload
             )
 
-        fun handleSendMailPacket(payload: SendMailPayload, context: ServerPlayNetworking.Context) {
+        fun handleSendMailPacket(payload: SendMailRequestPayload, context: ServerPlayNetworking.Context) {
             val player = context.player()
             val level = player.level()
             val targetPos = payload.targetPos
 
             val menu = player.containerMenu as? MailboxMenu ?: return
 
-            val senderBE = level.getBlockEntity(menu.blockPos) as? MailboxBlockEntity ?: return
+            val senderBE = level.getBlockEntity(menu.data.blockPos) as? MailboxBlockEntity ?: return
             val targetBE = level.getBlockEntity(targetPos) as? MailboxBlockEntity ?: return
 
             var stack = menu.mailSlot.item.copy()
@@ -69,7 +68,7 @@ data class SendMailPayload(val targetPos: BlockPos) : CustomPacketPayload {
                 senderBE.setChanged()
                 targetBE.setChanged()
                 targetBE.updateMailboxState(MailboxState.HAS_MAIL)
-                level.playSound(null, menu.blockPos, SoundEvents.UI_LOOM_SELECT_PATTERN, SoundSource.BLOCKS, 0.3f, 1.2f)
+                level.playSound(null, menu.data.blockPos, SoundEvents.UI_LOOM_SELECT_PATTERN, SoundSource.BLOCKS, 0.3f, 1.2f)
             }
             else ServerPlayNetworking.send(player, SendMailResponsePayload(Component.translatable("container.plantz.mailbox_full")))
         }

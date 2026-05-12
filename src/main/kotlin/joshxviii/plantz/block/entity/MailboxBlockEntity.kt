@@ -36,11 +36,12 @@ import net.minecraft.world.level.block.entity.BaseContainerBlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.storage.ValueInput
 import net.minecraft.world.level.storage.ValueOutput
+import kotlin.jvm.optionals.getOrDefault
 
 class MailboxBlockEntity(
     worldPosition: BlockPos,
     blockState: BlockState,
-    val color : DyeColor = DyeColor.WHITE,
+    var color : DyeColor = DyeColor.WHITE,
 ) : BaseContainerBlockEntity(PazBlocks.MAILBOX_ENTITY, worldPosition, blockState), ExtendedMenuProvider<MailboxData> {
     private var name: Component? = null
     private var ejectTimer: Int = 0
@@ -48,10 +49,6 @@ class MailboxBlockEntity(
 
     companion object {
         val DEFAULT_NAME = Component.translatable("item.plantz.mailbox");
-    }
-
-    init {
-
     }
 
     private val inventory = SimpleContainer(5)
@@ -79,18 +76,8 @@ class MailboxBlockEntity(
         }
     }
 
-    override fun createMenu(containerId: Int, inventory: Inventory): AbstractContainerMenu = MailboxMenu(containerId, inventory, blockPos)
-    override fun getScreenOpeningData(player: ServerPlayer): MailboxData = MailboxData(blockPos)
-
-    override fun setLevel(level: Level) {
-        super.setLevel(level)
-        MailboxManager.registerMailbox(level, worldPosition, this)
-    }
-
-    override fun setRemoved() {
-        super.setRemoved()
-        MailboxManager.unregisterMailbox(level!!, worldPosition)
-    }
+    override fun createMenu(containerId: Int, inventory: Inventory): AbstractContainerMenu = MailboxMenu(containerId, inventory, asMailBoxData())
+    override fun getScreenOpeningData(player: ServerPlayer): MailboxData = asMailBoxData()
 
     fun tryToGetMail(): Boolean {
         val currentState = blockState.getValue(STATE)
@@ -116,12 +103,14 @@ class MailboxBlockEntity(
 
     override fun saveAdditional(output: ValueOutput) {
         super.saveAdditional(output)
+        output.store("Color", DyeColor.CODEC, color)
         output.storeNullable<Component>("CustomName", ComponentSerialization.CODEC, this.name)
         output.store("EjectTimer", Codec.INT, ejectTimer)
         ContainerHelper.saveAllItems(output, inventory.items)
     }
     override fun loadAdditional(input: ValueInput) {
         super.loadAdditional(input)
+        color = input.read("Color", DyeColor.CODEC).getOrDefault(DyeColor.WHITE)
         this.name = parseCustomNameSafe(input, "CustomName")
         ejectTimer = input.getInt("EjectTimer").get()
         ContainerHelper.loadAllItems(input, inventory.items)
@@ -174,6 +163,13 @@ class MailboxBlockEntity(
         val z = worldPosition.z + 0.5 + direction.z / 2.0
         level!!.playSound(
             null, x, y, z, event, SoundSource.BLOCKS, 0.5f, level!!.getRandom().nextFloat() * 0.1f + pitch
+        )
+    }
+    fun asMailBoxData(): MailboxData {
+        return MailboxData(
+            blockPos,
+            color.textColor,
+            getName(),
         )
     }
 }

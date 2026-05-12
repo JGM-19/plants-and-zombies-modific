@@ -1,12 +1,7 @@
 package joshxviii.plantz.block.entity
 
-import joshxviii.plantz.PazMain
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLevelEvents
+import joshxviii.plantz.MailboxData
 import net.minecraft.core.BlockPos
-import net.minecraft.network.chat.Component
-import net.minecraft.network.chat.MutableComponent
-import net.minecraft.network.chat.Style
 import net.minecraft.resources.ResourceKey
 import net.minecraft.world.level.Level
 import java.util.Locale
@@ -14,47 +9,32 @@ import java.util.Locale
 object MailboxManager {
 
     private val mailboxes: MutableMap<ResourceKey<Level>, MutableSet<BlockPos>> = mutableMapOf()
-    private val mailboxData: MutableMap<BlockPos, MailboxBlockEntity> = mutableMapOf()
 
     fun clearMailboxes() {
         mailboxes.clear()
-        mailboxData.clear()
     }
 
-    fun registerMailbox(level: Level, pos: BlockPos, blockEntity: MailboxBlockEntity) {
+    fun registerMailbox(level: Level, blockEntity: MailboxBlockEntity) {
         val levelKey = level.dimension()
+        val pos = blockEntity.blockPos
         mailboxes.getOrPut(levelKey) { mutableSetOf() }.add(pos)
-        mailboxData[pos] = blockEntity
+        val data = blockEntity.asMailBoxData()
     }
 
     fun unregisterMailbox(level: Level, pos: BlockPos) {
         val levelKey = level.dimension()
         mailboxes[levelKey]?.remove(pos)
-        mailboxData.remove(pos)
     }
 
-    fun getMailboxesInLevel(level: Level): List<MailboxBlockEntity> {
+    fun getMailboxesInLevel(level: Level): List<MailboxData> {
         val levelKey = level.dimension()
 
         return mailboxes[levelKey]?.mapNotNull { pos ->
-            mailboxData[pos] ?: level.getBlockEntity(pos) as? MailboxBlockEntity
+            (level.getBlockEntity(pos) as? MailboxBlockEntity)?.asMailBoxData()
         } ?: emptyList()
     }
 
-    private fun createDisplayName(mailbox: MailboxBlockEntity, pos: BlockPos): MutableComponent {
-        val customName = mailbox.name
-
-        return if (customName != MailboxBlockEntity.DEFAULT_NAME) {
-            customName.copy()
-        } else {
-            Component.translatable(
-                "container.plantz.mailbox_coords",
-                pos.x, pos.y, pos.z
-            ).withStyle(Style.EMPTY)
-        }
-    }
-
-    fun searchMailboxes(mailboxes: List<MailboxBlockEntity>, search: String): List<MailboxBlockEntity> {
+    fun searchMailboxes(mailboxes: List<MailboxData>, search: String): List<MailboxData> {
         if (search.isEmpty()) return mailboxes
 
         return mailboxes.filter { mailbox ->

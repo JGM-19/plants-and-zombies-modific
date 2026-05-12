@@ -5,6 +5,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder
 import joshxviii.plantz.PazBlocks
 import joshxviii.plantz.PazCriteria
 import joshxviii.plantz.block.entity.MailboxBlockEntity
+import joshxviii.plantz.block.entity.MailboxManager
+import joshxviii.plantz.network.MailboxListResponsePayload
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.server.level.ServerLevel
@@ -87,8 +90,8 @@ class MailboxBlock(
 
     override fun <T : BlockEntity> getTicker(level: Level, blockState: BlockState, type: BlockEntityType<T>): BlockEntityTicker<T>? {
         return if (type == PazBlocks.MAILBOX_ENTITY) {
-            BlockEntityTicker { lvl, pos, st, be ->
-                (be as MailboxBlockEntity).tick(lvl, pos, st)
+            BlockEntityTicker { level, pos, state, blockEntity ->
+                (blockEntity as MailboxBlockEntity).tick(level, pos, state)
             }
         } else null
     }
@@ -101,8 +104,12 @@ class MailboxBlock(
         hitResult: BlockHitResult
     ): InteractionResult {
         if (!level.isClientSide) {
-            (level.getBlockEntity(pos) as? MailboxBlockEntity).let {
-                player.openMenu(it)
+            (level.getBlockEntity(pos) as? MailboxBlockEntity).let { currentMailbox ->
+                player.openMenu(currentMailbox)
+                ServerPlayNetworking.send(player as ServerPlayer, MailboxListResponsePayload(level.dimension(), MailboxManager.getMailboxesInLevel(level)
+                    .filter { it.blockPos != pos }
+                    .sortedBy { it.blockPos.distSqr(pos) }
+                ))
             }
         }
         return InteractionResult.SUCCESS

@@ -1,6 +1,7 @@
 package joshxviii.plantz
 
 import joshxviii.plantz.inventory.MailboxMenu
+import joshxviii.plantz.network.MailboxListResponsePayload
 import joshxviii.plantz.networking.SendMailResponsePayload
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking
 import net.minecraft.sounds.SoundEvents
@@ -18,5 +19,16 @@ object PazClientNetwork {
             }
         }
 
+        ClientPlayNetworking.registerGlobalReceiver(MailboxListResponsePayload.ID) { payload, context ->
+            context.client().execute {
+                val player = context.player()
+                val menu = player.containerMenu as? MailboxMenu ?: return@execute
+
+                // Rebuild list from positions
+                menu.availableMailboxes = payload.mailboxes
+                menu.updateFilteredMailboxes()
+            }
+
+        }
     }
 }

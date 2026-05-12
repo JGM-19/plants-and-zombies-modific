@@ -7,13 +7,16 @@ import net.minecraft.core.BlockPos
 import net.minecraft.core.Registry
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.RegistryFriendlyByteBuf
+import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.ComponentSerialization
+import net.minecraft.network.codec.ByteBufCodecs
 import net.minecraft.network.codec.StreamCodec
 
 
 object PazMenus {
 
     @JvmField val MAILBOX_MENU: ExtendedMenuType<MailboxMenu, MailboxData> = ExtendedMenuType(
-        { containerId, inventory, data -> MailboxMenu(containerId, inventory, data.blockPos) },
+        { containerId, inventory, data -> MailboxMenu(containerId, inventory, data) },
         MailboxData.STREAM_CODEC
     )
 
@@ -40,12 +43,17 @@ data class TimeMachineData(val blockPos: BlockPos) {
 }
 
 @JvmRecord
-data class MailboxData(val blockPos: BlockPos) {
+data class MailboxData(val blockPos: BlockPos, val color: Int, val name: Component) {
     companion object {
         val STREAM_CODEC: StreamCodec<RegistryFriendlyByteBuf, MailboxData> =
             StreamCodec.composite(
                 BlockPos.STREAM_CODEC,
-                MailboxData::blockPos
-            ) { blockPos: BlockPos -> MailboxData(blockPos) }
+                MailboxData::blockPos,
+                ByteBufCodecs.INT,
+                MailboxData::color,
+                ComponentSerialization.STREAM_CODEC,
+                MailboxData::name,
+                ::MailboxData
+            )
     }
 }

@@ -1,5 +1,6 @@
 package joshxviii.plantz.inventory
 
+import joshxviii.plantz.MailboxData
 import joshxviii.plantz.PazMenus
 import joshxviii.plantz.PazTags
 import joshxviii.plantz.block.entity.MailboxBlockEntity
@@ -11,6 +12,7 @@ import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.inventory.ContainerLevelAccess
+import net.minecraft.world.inventory.ContainerSynchronizer
 import net.minecraft.world.inventory.Slot
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
@@ -20,21 +22,27 @@ import java.util.*
 class MailboxMenu(
     containerId: Int,
     val inventory: Inventory,
-    val blockPos: BlockPos,
+    val data: MailboxData,
     private val access: ContainerLevelAccess = ContainerLevelAccess.NULL
 ) : AbstractContainerMenu(PazMenus.MAILBOX_MENU, containerId) {
 
-    private var slotUpdateListener = Runnable {}
+    var slotUpdateListener = Runnable {}
+    var mailboxListUpdateListener = Runnable {}
     var selectedMailboxIndex: Int? = null
     val mailSlot: Slot
     var showIsFullMessage: Boolean = false
-    private var availableMailboxes: List<MailboxBlockEntity> = emptyList()
-    var filteredMailboxes: List<MailboxBlockEntity> = emptyList()
+    var availableMailboxes: List<MailboxData> = emptyList()
+        set(value) {
+            field = value
+            updateFilteredMailboxes()
+            mailboxListUpdateListener.run()
+        }
+    var filteredMailboxes: List<MailboxData> = emptyList()
     var searchFilter: String = ""
         set(value) {
             field = value
             updateFilteredMailboxes()
-            this.slotUpdateListener.run()
+            slotUpdateListener.run()
         }
 
     private val inputContainer: Container = object : SimpleContainer(1) {
@@ -54,7 +62,7 @@ class MailboxMenu(
         addStandardInventorySlots(inventory, 8, 98)
     }
 
-    fun getMailbox(index: Int?): MailboxBlockEntity? {
+    fun getMailbox(index: Int?): MailboxData? {
         if (index == null ) return null
         if (index < 0 || index >= filteredMailboxes.size) return null
         return filteredMailboxes[index]
@@ -68,14 +76,6 @@ class MailboxMenu(
     }
     fun isValidBlock(state: BlockState): Boolean = state.`is`(PazTags.BlockTags.MAILBOX)
 
-    fun refreshMailboxList() {
-        val level = inventory.player.level()
-
-        availableMailboxes = MailboxManager.getMailboxesInLevel(level)
-            .filterNot { mailbox -> mailbox.blockPos == blockPos }
-        updateFilteredMailboxes()
-    }
-
     fun updateFilteredMailboxes() {
         filteredMailboxes = MailboxManager.searchMailboxes(availableMailboxes, searchFilter)
     }
@@ -85,10 +85,6 @@ class MailboxMenu(
         if (!mailStack.isEmpty) {
             this.broadcastChanges()
         }
-    }
-
-    fun registerUpdateListener(slotUpdateListener: Runnable) {
-        this.slotUpdateListener = slotUpdateListener
     }
 
     override fun quickMoveStack(player: Player, slotIndex: Int): ItemStack {
