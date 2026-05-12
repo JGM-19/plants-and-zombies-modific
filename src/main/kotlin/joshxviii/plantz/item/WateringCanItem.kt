@@ -81,43 +81,65 @@ class WateringCanItem(properties: Properties) : BlockItem(PazBlocks.WATERING_CAN
         val blockState = level.getBlockState(pos)
         val storedWaterComponent = itemStack.get(PazComponents.STORED_WATER)
 
-        //
-        if (player?.isShiftKeyDown==true) return super.useOn(context)
+
+        if (player?.isShiftKeyDown==true) {
+            if (storedWaterComponent?.isFull() != true) {
+                var successTakeWater = false
+                if (blockState.`is`(Blocks.WATER_CAULDRON) && blockState.hasProperty(BlockStateProperties.LEVEL_CAULDRON)) {
+                    val waterLevel = blockState.getValue(BlockStateProperties.LEVEL_CAULDRON)
+                    if (waterLevel>1) {
+                        level.setBlockAndUpdate(pos, blockState.setValue(BlockStateProperties.LEVEL_CAULDRON, waterLevel-1))
+                        successTakeWater = true
+                    }
+                    else if (waterLevel == 1) {
+                        level.setBlockAndUpdate(pos, Blocks.CAULDRON.defaultBlockState())
+                        successTakeWater = true
+                    }
+                }
+                if (successTakeWater) {
+                    itemStack.set(PazComponents.STORED_WATER, storedWaterComponent?.addWater(2))
+                    level.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 1.0f, 0.9f)
+                    return InteractionResult.SUCCESS
+                }
+            }
+            // default behavior to place while crouched
+            return super.useOn(context)
+        }
         if (storedWaterComponent?.let { it.storedWater <= 0 } == true) return InteractionResult.PASS
-        if (context.clickedFace != Direction.DOWN ) {
-            var success = false
+        else if (context.clickedFace != Direction.DOWN ) {
+            var successAddedWater = false
             if (blockState.`is`(BlockTags.FIRE)) {
                 level.playSound(null, pos, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.2f, 1.0f)
                 level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState())
-                success = true
+                successAddedWater = true
             }
             if (blockState.`is`(BlockTags.CONVERTABLE_TO_MUD)) {// mud conversion
                 level.playSound(null, pos, SoundEvents.GENERIC_SPLASH, SoundSource.BLOCKS, 1.0f, 1.0f)
                 level.gameEvent(null, GameEvent.FLUID_PLACE, pos)
                 level.setBlockAndUpdate(pos, Blocks.MUD.defaultBlockState())
-                success = true
+                successAddedWater = true
             }
             if (blockState.hasProperty(BlockStateProperties.MOISTURE)) {// farmland
                 blockState.getValue(BlockStateProperties.MOISTURE).let {
                     if (it<7) {
                         level.setBlockAndUpdate(pos, blockState.setValue(BlockStateProperties.MOISTURE, 7))
-                        success = true
+                        successAddedWater = true
                     }
                 }
             }
             if (blockState.`is`(Blocks.CAULDRON)) {
                 val newState: BlockState = Blocks.WATER_CAULDRON.defaultBlockState()
                 level.setBlockAndUpdate(pos, newState)
-                success = true
+                successAddedWater = true
             }
             if (blockState.`is`(Blocks.WATER_CAULDRON) && blockState.hasProperty(BlockStateProperties.LEVEL_CAULDRON)) {
                 val waterLevel = blockState.getValue(BlockStateProperties.LEVEL_CAULDRON)
                 if (waterLevel<3) {
                     level.setBlockAndUpdate(pos, blockState.setValue(BlockStateProperties.LEVEL_CAULDRON, waterLevel+1))
-                    success = true
+                    successAddedWater = true
                 }
             }
-            if (success) {
+            if (successAddedWater) {
                 itemStack.set(PazComponents.STORED_WATER, storedWaterComponent?.removeWater(2))
                 if (!level.isClientSide) {
                     level.playSound(null, pos, PazSounds.WATERING_CAN, SoundSource.BLOCKS)
@@ -133,6 +155,7 @@ class WateringCanItem(properties: Properties) : BlockItem(PazBlocks.WATERING_CAN
                 return InteractionResult.SUCCESS
             }
         }
+
         return InteractionResult.PASS
     }
 

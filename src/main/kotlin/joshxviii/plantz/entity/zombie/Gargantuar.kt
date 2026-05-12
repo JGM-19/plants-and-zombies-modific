@@ -238,16 +238,22 @@ class Gargantuar(type: EntityType<out Gargantuar>, level: Level) : PazZombie(typ
                     WeightedList.of(),
                     SoundEvents.WIND_CHARGE_BURST
                 )
-            if (level is ServerLevel) level.sendParticles(
-                BlockParticleOption(ParticleTypes.BLOCK, level.getBlockState(BlockPos.containing(pos).below())),
-                pos.x, pos.y, pos.z,
-                50, 1.2, 0.4, 1.2, 0.2
-            )
-            if (level is ServerLevel) level.sendParticles(
-                ParticleTypes.DUST_PLUME,
-                pos.x, pos.y+0.2, pos.z,
-                45, 1.0, 0.4, 1.0, 0.01
-            )
+            if (level is ServerLevel) {
+                level.sendParticles(
+                    BlockParticleOption(ParticleTypes.BLOCK, level.getBlockState(BlockPos.containing(pos).below())),
+                    pos.x, pos.y, pos.z,
+                    50, 1.2, 0.4, 1.2, 0.2
+                )
+                level.sendParticles(
+                    ParticleTypes.DUST_PLUME,
+                    pos.x, pos.y+0.2, pos.z,
+                    45, 1.0, 0.4, 1.0, 0.01
+                )
+                level.sendParticles(NukeWaveParticleOptions(color = 0xD8E7E8, scale = 3.5f),
+                    pos.x, gargantuar.y+0.2, pos.z, 1, 0.0, 0.0, 0.0, 0.0
+                )
+            }
+
             gargantuar.playSound(SoundEvents.MACE_SMASH_GROUND_HEAVY, 1.0f, 0.9f)
         }
     }

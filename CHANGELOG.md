@@ -16,6 +16,7 @@
   - All players can now access mailboxes from any loaded chunk within the same dimension.
   - The address list is now sorted by distance from the current mailbox.
 - Fixed issues with projectiles phasing through entities, hitting entities multiple times, and not being deflected
+- Watering Can can take water out of a cauldron by crouching.
 
 # Changelog 1.4
 - Added Doom-Shroom
