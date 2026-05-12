@@ -14,8 +14,8 @@ object PazClientNetwork {
                 val mc = context.client()
                 val player = mc.player ?: return@execute
                 val menu = player.containerMenu as? MailboxMenu ?: return@execute
-
-                player.playSound(SoundEvents.BARREL_CLOSE, 0.4f, 1.2f)
+                menu.responseMessage = payload.message
+                menu.responseTimeout = 30
             }
         }
 

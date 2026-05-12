@@ -7,6 +7,8 @@
 ### Technical Changes
 
 # Changelog 1.4.1
+- Solar battery can be placed and will absorb nearby sun.
+  - The light level and redstone level changes depending on the store amount of sun.
 - Adjusted spawn rates and drop chances.
 - Reduced sun fuel amount by half.
 - Made sun a little easier to pickup
@@ -17,6 +19,7 @@
 - Mailboxes have been updated.
   - All players can now access mailboxes from any loaded chunk within the same dimension.
   - The address list is now sorted by distance from the current mailbox.
+  - Added response messages when sending mail.
 - Fixed issues with projectiles phasing through entities, hitting entities multiple times, and not being deflected
 - Watering Can can take water out of a cauldron by crouching.
 - Endermen will now avoid plant projectiles

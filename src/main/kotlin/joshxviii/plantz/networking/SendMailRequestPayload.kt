@@ -69,8 +69,16 @@ data class SendMailRequestPayload(val targetPos: BlockPos) : CustomPacketPayload
                 targetBE.setChanged()
                 targetBE.updateMailboxState(MailboxState.HAS_MAIL)
                 level.playSound(null, menu.data.blockPos, SoundEvents.UI_LOOM_SELECT_PATTERN, SoundSource.BLOCKS, 0.3f, 1.2f)
+                ServerPlayNetworking.send(player, SendMailResponsePayload(
+                    Component.translatable("container.plantz.mailbox_success").withColor(0x00FF00)
+                ))
             }
-            else ServerPlayNetworking.send(player, SendMailResponsePayload(Component.translatable("container.plantz.mailbox_full")))
+            else {
+                level.playSound(null, menu.data.blockPos, SoundEvents.BARREL_CLOSE, SoundSource.BLOCKS, 0.3f, 1.2f)
+                ServerPlayNetworking.send(player, SendMailResponsePayload(
+                    Component.translatable("container.plantz.mailbox_full", targetBE.name).withColor(0xFF0000)
+                ))
+            }
         }
     }
 

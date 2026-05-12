@@ -14,6 +14,7 @@ import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.client.renderer.RenderPipelines
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.Identifier
+import net.minecraft.util.ARGB
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.player.Inventory
 
@@ -110,6 +111,28 @@ class MailboxScreen(
         }
     }
 
+    override fun extractRenderState(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, a: Float) {
+        super.extractRenderState(graphics, mouseX, mouseY, a)
+        val xo = leftPos
+        val yo = topPos
+        if (menu.responseTimeout>0) {
+            val padding = 1
+            val width = 176
+            val height = 16
+            graphics.fill(
+                xo - padding,
+                yo - padding - height,
+                xo + width + padding,
+                yo + 15 + padding - height,
+                ARGB.multiply(-0xD0D0D0, -1)
+            )
+            graphics.centeredText(font, menu.responseMessage, leftPos+(88), topPos+4-height, -1)
+
+        }
+        //graphics.textWithWordWrap(font, Component.literal("ASDADASDASD"), 0, 0, 340, -1)
+        //raphics.centeredText(font, "asdasdwqcaw", leftPos, topPos, -1)
+    }
+
     override fun extractBackground(graphics: GuiGraphicsExtractor, xm: Int, ym: Int, a: Float) {
         val xo = leftPos
         val yo = topPos
@@ -125,8 +148,11 @@ class MailboxScreen(
         }
         // show message when no addresses are available
         if (addressButtons.isEmpty()) graphics.textWithWordWrap(font, Component.translatable("container.plantz.no_address"), xo+52, yo+28, 96, -1)
+    }
 
-        if(menu.showIsFullMessage) graphics.textWithWordWrap(font, Component.translatable("container.plantz.mailbox_full"), xo, yo, 96, -1)
+    override fun containerTick() {
+        super.containerTick()
+        if (menu.responseTimeout > 0) --menu.responseTimeout
     }
 
     override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {

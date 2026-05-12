@@ -3,16 +3,15 @@ package joshxviii.plantz.inventory
 import joshxviii.plantz.MailboxData
 import joshxviii.plantz.PazMenus
 import joshxviii.plantz.PazTags
-import joshxviii.plantz.block.entity.MailboxBlockEntity
 import joshxviii.plantz.block.entity.MailboxManager
 import net.minecraft.core.BlockPos
+import net.minecraft.network.chat.Component
 import net.minecraft.world.Container
 import net.minecraft.world.SimpleContainer
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.inventory.ContainerLevelAccess
-import net.minecraft.world.inventory.ContainerSynchronizer
 import net.minecraft.world.inventory.Slot
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
@@ -30,7 +29,8 @@ class MailboxMenu(
     var mailboxListUpdateListener = Runnable {}
     var selectedMailboxIndex: Int? = null
     val mailSlot: Slot
-    var showIsFullMessage: Boolean = false
+    var responseMessage: Component = Component.empty()
+    var responseTimeout: Int = 0
     var availableMailboxes: List<MailboxData> = emptyList()
         set(value) {
             field = value
