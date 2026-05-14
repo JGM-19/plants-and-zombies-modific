@@ -14,10 +14,11 @@ class WakeUpSleepingPlantsGoal(
     cooldownTime: Int = 20,
     actionDelay: Int = 0,
     actionStartEffect: () -> Unit = {},
+    actionSuccessEffect: () -> Unit = {},
     actionEndEffect: () -> Unit = {},
     actionPredicate: Predicate<PathfinderMob> = Predicate { true },
     val maxPlants: Int = 1,
-): ActionGoal(usingEntity, cooldownTime, actionDelay, actionStartEffect, actionEndEffect, actionPredicate, -10..20) {
+): ActionGoal(usingEntity, cooldownTime, actionDelay, actionStartEffect, actionSuccessEffect, actionEndEffect, actionPredicate, -10..20) {
     var targets: List<Plant> = listOf()
     val targetConditions: TargetingConditions
     val followDistance = usingEntity.getAttribute(Attributes.FOLLOW_RANGE)?.value?: 1.0

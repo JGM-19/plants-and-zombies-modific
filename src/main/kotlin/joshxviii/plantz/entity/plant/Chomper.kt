@@ -89,7 +89,6 @@ class Chomper(type: EntityType<out Plant>, level: Level) : Plant(PazEntities.CHO
         val chomperEntity: Chomper,
     ) : MeleeAttackActionGoal(
         usingEntity = chomperEntity,
-        attackReach = 1.85,
         cooldownTime = 60,
         actionDelay = 10,
         damageType = PazDamageTypes.PLANT_CHOMP,

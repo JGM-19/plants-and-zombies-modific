@@ -10,13 +10,14 @@ import java.util.function.Predicate
  * Used for triggering animations and action timing
  * @param actionDelay amount of time in ticks before [doAction] is called from when the action started.
  * @param actionStartEffect Callback function used to add effects at the start of the action
- * @param actionEndEffect Callback function used to add effects at the end of the action
+ * @param actionSuccessEffect Callback function used to add effects at the end of the action
  */
 abstract class ActionGoal(
     val usingEntity: PathfinderMob,
     val cooldownTime: Int = 20,
     val actionDelay: Int = 0,
     val actionStartEffect: () -> Unit = {},
+    val actionSuccessEffect: () -> Unit = {},
     val actionEndEffect: () -> Unit = {},
     val actionPredicate: Predicate<PathfinderMob> = Predicate { true },
     val cooldownVariationRange: IntRange = 0..0
@@ -35,7 +36,7 @@ abstract class ActionGoal(
     override fun tick() {
         if (
             canDoAction()
-            && !(usingEntity is Plant && usingEntity.cooldown > 0)
+            && !(usingEntity is Plant && usingEntity.cooldown > -1)
             && actionTimer == -1
         ) {
             (usingEntity as? Plant)?.cooldown = cooldownTime+cooldownVariationRange.random() // start animation
@@ -46,9 +47,10 @@ abstract class ActionGoal(
 
         if (actionTimer > 0) --actionTimer
         if (actionTimer == 0) {// do action
-            if (actionPredicate.test(usingEntity)) if (doAction()) actionEndEffect()
+            if (actionPredicate.test(usingEntity)) if (doAction()) actionSuccessEffect()
             isDoingAction = false
             actionTimer = -1
+            actionEndEffect()
         }
     }
 

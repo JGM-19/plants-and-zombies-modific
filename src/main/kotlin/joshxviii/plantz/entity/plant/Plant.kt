@@ -55,6 +55,7 @@ import net.minecraft.world.entity.monster.Enemy
 import net.minecraft.world.entity.monster.zombie.Zombie
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.component.AttackRange
 import net.minecraft.world.level.*
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.portal.TeleportTransition
@@ -113,9 +114,11 @@ abstract class Plant(type: EntityType<out Plant>, level: Level) : TamableAnimal(
             val maxHealth: Double = 20.0,
             val attackDamage: Double = 1.0,
             val attackKnockback: Double = 0.001,
+            val attackRange: Double = 1.0,
             val movementSpeed: Double = 0.0,
             val followRange: Double = 14.0,
             val armor: Double = 0.0,
+            val scale: Double = 1.0,
         ) {
             fun apply(builder: AttributeSupplier.Builder): AttributeSupplier.Builder {
                 return builder
@@ -123,8 +126,10 @@ abstract class Plant(type: EntityType<out Plant>, level: Level) : TamableAnimal(
                     .add(Attributes.FOLLOW_RANGE, followRange)
                     .add(Attributes.ATTACK_DAMAGE, attackDamage)
                     .add(Attributes.ATTACK_KNOCKBACK, attackKnockback)
+                    .add(Attributes.ENTITY_INTERACTION_RANGE, attackRange)
                     .add(Attributes.MOVEMENT_SPEED, movementSpeed)
                     .add(Attributes.ARMOR, armor)
+                    .add(Attributes.SCALE, scale)
             }
         }
     }
@@ -366,6 +371,8 @@ abstract class Plant(type: EntityType<out Plant>, level: Level) : TamableAnimal(
         val level = this.level()
 
         if (level is ServerLevel) {
+            cooldown--
+            if (cooldown == 0) cooldownFinished()
             if (!onValidGround() || isOverlappingWithOther(blockPosition())) {
                 if (--nutrientSupply <= 0) {
                     if (tickCount % 20 == 0) hurtServer(level, damageSources().dryOut(), 2.0f)
@@ -375,7 +382,6 @@ abstract class Plant(type: EntityType<out Plant>, level: Level) : TamableAnimal(
             } else nutrientSupply = NUTRIENT_SUPPLY_MAX
         }
 
-        --cooldown
         if (!this.isNoAi) { updateAnimationState() }
 
         val target = this.target
@@ -383,7 +389,7 @@ abstract class Plant(type: EntityType<out Plant>, level: Level) : TamableAnimal(
 
         if (isAsleep && tickCount % 12 == 0 && random.nextFloat()>0.7 && tickCount > 18 && isAlive) {
             val direction = calculateViewVector(xRot, yHeadRot).scale(boundingBox.xsize)
-            level().addParticle(
+            level.addParticle(
                 PazServerParticles.SLEEP,
                 direction.x + getRandomX(0.2),
                 direction.y.toFloat() + y + eyeHeight.toDouble() - 0.1,
@@ -410,7 +416,7 @@ abstract class Plant(type: EntityType<out Plant>, level: Level) : TamableAnimal(
                 PlantGrowNeeds.SUN -> PazServerParticles.NEEDS_SUN
                 PlantGrowNeeds.WATER -> PazServerParticles.NEEDS_WATER
                 else -> null
-            }?.let { level().addParticle(it, x, y+eyeHeight+0.55, z, 0.0, 0.0, 0.0) }
+            }?.let { level.addParticle(it, x, y+eyeHeight+0.55, z, 0.0, 0.0, 0.0) }
         }
     }
 
@@ -445,7 +451,9 @@ abstract class Plant(type: EntityType<out Plant>, level: Level) : TamableAnimal(
             }
             PlantState.COOLDOWN -> {
                 idleAnimationState.startIfStopped(tickCount)
-                if (cooldown <= 0) state = PlantState.IDLE
+                if (cooldown <= 0) {
+                    state = PlantState.IDLE
+                }
                 if (isAsleep) state = PlantState.SLEEP
             }
             PlantState.RECHARGE -> state = PlantState.IDLE
@@ -530,6 +538,7 @@ abstract class Plant(type: EntityType<out Plant>, level: Level) : TamableAnimal(
     open fun sleepsDuringNight(): Boolean = false
     open fun sleepsDuringDay(): Boolean = this.`is`(PazTags.EntityTypes.MUSHROOM)
     open fun canSurviveOn(block: BlockState) : Boolean = block.`is`(PLANTABLE)
+    open fun cooldownFinished() {}
 
     fun getBlockBelow(): BlockState {
         val feetY = y - 0.001

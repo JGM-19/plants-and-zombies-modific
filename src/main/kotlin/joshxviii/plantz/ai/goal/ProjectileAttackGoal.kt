@@ -24,6 +24,7 @@ class ProjectileAttackGoal(
     cooldownTime: Int = 20,
     actionDelay: Int = 0,
     actionStartEffect: () -> Unit = {},
+    actionSuccessEffect: () -> Unit = {},
     actionEndEffect: () -> Unit = {},
     actionPredicate: Predicate<PathfinderMob> = Predicate { true },
     val projectileFactory: () -> Entity,
@@ -32,7 +33,7 @@ class ProjectileAttackGoal(
     val attackRadius: Float = usingEntity.attributes.getValue(Attributes.FOLLOW_RANGE).toFloat(),
     val useHighArc: Boolean = false,
     val soundEvent: SoundEvent = PazSounds.PROJECTILE_FIRE,
-) : ActionGoal(usingEntity, cooldownTime, actionDelay, actionStartEffect, actionEndEffect, actionPredicate) {
+) : ActionGoal(usingEntity, cooldownTime, actionDelay, actionStartEffect, actionSuccessEffect, actionEndEffect, actionPredicate) {
     var distanceSqr: Double = 0.0
 
     override fun canUse(): Boolean = (

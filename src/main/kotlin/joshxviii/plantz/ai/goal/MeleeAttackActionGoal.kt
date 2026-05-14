@@ -17,12 +17,12 @@ open class MeleeAttackActionGoal(
     cooldownTime: Int = 20,
     actionDelay: Int = 0,
     actionStartEffect: () -> Unit = {},
+    actionSuccessEffect: () -> Unit = {},
     actionEndEffect: () -> Unit = {},
     actionPredicate: Predicate<PathfinderMob> = Predicate { true },
-    val attackReach : Double = 5.0,
     val damageType: ResourceKey<DamageType> = PazDamageTypes.PLANT,
     val afterHitEntityEffect: (target: LivingEntity) -> Unit = {},
-) : ActionGoal(usingEntity, cooldownTime, actionDelay, actionStartEffect, actionEndEffect, actionPredicate) {
+) : ActionGoal(usingEntity, cooldownTime, actionDelay, actionStartEffect, actionSuccessEffect, actionEndEffect, actionPredicate) {
 
     override fun canUse(): Boolean = (
         actionPredicate.test(usingEntity)
@@ -35,12 +35,12 @@ open class MeleeAttackActionGoal(
         val target = usingEntity.target?: return false
         usingEntity.lookControl.setLookAt(target, 30f, 30f)
 
-        return isInReach(target);
+        return isReachable(target);
     }
 
     override fun doAction() : Boolean {
         val target = usingEntity.target?: return false
-        if (!isInReach(target)) return false
+        if (!isReachable(target)) return false
 
         val damage : Float = usingEntity.attributes.getValue(Attributes.ATTACK_DAMAGE).toFloat()
         val knockback : Double = usingEntity.attributes.getValue(Attributes.ATTACK_KNOCKBACK)
@@ -48,19 +48,20 @@ open class MeleeAttackActionGoal(
             if (PazConfig.PLAYER_CREDIT_FOR_PLANT_KILLS && usingEntity is OwnableEntity) usingEntity.rootOwner else null)
 
         if (target.hurtServer(usingEntity.level() as ServerLevel, source, damage)) {
-            afterHitEntityEffect(target)
             target.knockback(
                 knockback,
                 usingEntity.x - target.x,
                 usingEntity.z - target.z
             )
+            afterHitEntityEffect(target)
             return true
         }
 
         return false
     }
 
-    private fun isInReach(target: LivingEntity): Boolean {
-        return usingEntity.boundingBox.inflate(attackReach).intersects(target.boundingBox) && usingEntity.sensing.hasLineOfSight(target)
+    fun isReachable(target: LivingEntity): Boolean {
+        val range = usingEntity.attributes.let { if (it.hasAttribute(Attributes.ENTITY_INTERACTION_RANGE)) it.getValue(Attributes.ENTITY_INTERACTION_RANGE).toFloat() else 2f }
+        return usingEntity.distanceToSqr(target) <= range * range
     }
 }

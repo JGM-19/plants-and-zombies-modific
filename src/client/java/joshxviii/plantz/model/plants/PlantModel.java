@@ -52,12 +52,14 @@ public class PlantModel extends EntityModel<@NotNull PlantRenderState> {
         return this.sleepAnimation;
     };
 
+    public KeyframeAnimation getProcessedAction(PlantRenderState state) { return this.actionAnimation; }
+
     @Override
     public void setupAnim(@NotNull PlantRenderState state) {
         super.setupAnim(state);
         if (initAnimation!=null)     getProcessedInit(state).apply(state.getInitAnimationState(), state.ageInTicks);
         if (idleAnimation!=null && !state.getCoolDownAnimationState().isStarted()) getProcessedIdle(state).apply(state.getIdleAnimationState(), state.ageInTicks);
-        if (actionAnimation!=null)   this.actionAnimation.apply(state.getActionAnimationState(), state.ageInTicks);
+        if (actionAnimation!=null)   getProcessedAction(state).apply(state.getActionAnimationState(), state.ageInTicks);
         if (sleepAnimation!=null)    getProcessedSleep(state).apply(state.getSleepAnimationState(), state.ageInTicks);
         if (cooldownAnimation!=null && !state.getInitAnimationState().isStarted()) this.cooldownAnimation.apply(state.getCoolDownAnimationState(), state.ageInTicks);
         this.bounceAnimation.apply(state.getBounceAnimationState(), state.ageInTicks);

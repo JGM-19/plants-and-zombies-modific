@@ -22,6 +22,7 @@ class BeamAttackGoal(
     cooldownTime: Int = 20,
     actionDelay: Int = 0,
     actionStartEffect: () -> Unit = {},
+    actionSuccessEffect: () -> Unit = {},
     actionEndEffect: () -> Unit = {},
     actionPredicate: Predicate<PathfinderMob> = Predicate { true },
     val beamRange : Double = 10.0,
@@ -29,7 +30,7 @@ class BeamAttackGoal(
     val damageType: ResourceKey<DamageType> = PazDamageTypes.PLANT,
     val beamParticles : ParticleOptions? = null,
     val afterHitEntityEffect: (target: LivingEntity) -> Unit = {},
-) : ActionGoal(usingEntity, cooldownTime, actionDelay, actionStartEffect, actionEndEffect, actionPredicate) {
+) : ActionGoal(usingEntity, cooldownTime, actionDelay, actionStartEffect, actionSuccessEffect, actionEndEffect, actionPredicate) {
     private var piercedEntities: MutableList<Entity>? = null
 
     override fun canUse(): Boolean = (

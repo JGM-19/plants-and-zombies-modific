@@ -3,6 +3,8 @@ package joshxviii.plantz.model.plants;
 import joshxviii.plantz.PlantRenderState;
 import joshxviii.plantz.animation.plants.BonkChoyAnimation;
 import joshxviii.plantz.animation.plants.PotatoMineAnimation;
+import joshxviii.plantz.animation.plants.ScaredyShroomAnimation;
+import net.minecraft.client.animation.KeyframeAnimation;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -25,7 +27,7 @@ public class BonkChoyModel extends PlantModel {
 	private final ModelPart left_arm;
 	private final ModelPart left_arm2;
 	private final ModelPart left_arm3;
-
+	private final KeyframeAnimation megaPunchAnimation;
 
 	public BonkChoyModel(ModelPart root) {
 		super(
@@ -49,6 +51,7 @@ null,
 		this.left_arm = this.head.getChild("left_arm");
 		this.left_arm2 = this.left_arm.getChild("left_arm2");
 		this.left_arm3 = this.left_arm2.getChild("left_arm3");
+		this.megaPunchAnimation = BonkChoyAnimation.uppercut.bake(root);
 	}
 
 	public static LayerDefinition createBodyLayer() {
@@ -85,9 +88,15 @@ null,
 	}
 
 	@Override
+	public KeyframeAnimation getProcessedAction(PlantRenderState state) {
+		return !state.getUseSpecialAction() ? super.getProcessedAction(state) :
+				this.megaPunchAnimation;
+	}
+
+	@Override
 	public void setupAnim(@NotNull PlantRenderState state) {
 		super.setupAnim(state);
-		this.head.xRot = state.xRot * (float) (Math.PI / 180.0);
+		this.head.xRot = state.xRot * (float) (Math.PI / 360.0);
 		this.body.yRot = state.yRot * (float) (Math.PI / 180.0);
 	}
 }

@@ -95,7 +95,7 @@ public class TangleKelpAnimation {
 		))
 		.build();
 
-	public static final AnimationDefinition idle_land = AnimationDefinition.Builder.withLength(4.0F).looping()
+	public static final AnimationDefinition Idle_land = AnimationDefinition.Builder.withLength(4.0F).looping()
 		.addAnimation("right_kelp", new AnimationChannel(AnimationChannel.Targets.ROTATION, 
 			new Keyframe(0.0F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 45.0F), AnimationChannel.Interpolations.CATMULLROM),
 			new Keyframe(4.0F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 45.0F), AnimationChannel.Interpolations.CATMULLROM)

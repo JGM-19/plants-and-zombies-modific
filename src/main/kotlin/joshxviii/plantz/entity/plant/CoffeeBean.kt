@@ -34,7 +34,7 @@ class CoffeeBean(type: EntityType<out Plant>, level: Level) : Plant(PazEntities.
         this.goalSelector.addGoal(1, WakeUpSleepingPlantsGoal(
             this,
             actionDelay = 9,
-            actionEndEffect = {
+            actionSuccessEffect = {
                 addParticlesAroundSelf(
                     level(),
                     DustParticleOptions(8606770, 1f),

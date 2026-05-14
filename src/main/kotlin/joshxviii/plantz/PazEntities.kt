@@ -75,6 +75,7 @@ object PazEntities {
             maxHealth = 30.0,
             attackDamage = 10.0,
             attackKnockback = 0.15,
+            attackRange = 1.85,
             followRange = 4.75,
         )
     )
@@ -163,8 +164,9 @@ object PazEntities {
         EntityType.Builder.of(::BonkChoy, MobCategory.CREATURE),
         height = 0.8f,
         attributes = Plant.Companion.PlantAttributes(
-            attackDamage = 5.0,
+            attackDamage = 4.0,
             attackKnockback = 0.2,
+            attackRange = 1.75,
             followRange = 4.0,
         )
     )
@@ -177,6 +179,7 @@ object PazEntities {
             maxHealth = 14.0,
             attackDamage = 0.75,
             followRange = 1.0,
+            scale = 1.25
         )
     )
     @JvmField val PUFF_SHROOM: EntityType<PuffShroom> = registerPlant(

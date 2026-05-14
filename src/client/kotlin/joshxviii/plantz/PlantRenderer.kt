@@ -2,6 +2,7 @@ package joshxviii.plantz
 
 import com.mojang.blaze3d.vertex.PoseStack
 import joshxviii.plantz.ai.PlantState
+import joshxviii.plantz.entity.plant.BonkChoy
 import joshxviii.plantz.entity.plant.Explosive
 import joshxviii.plantz.entity.plant.KernelPult
 import joshxviii.plantz.entity.plant.Plant
@@ -102,6 +103,11 @@ class PlantRenderer(
         state.sleepAnimationState.copyFrom(entity.sleepAnimationState)
         state.bounceAnimationState.copyFrom(entity.bounceAnimation)
         state.customName = entity.customName?.string ?: ""
+        state.useSpecialAction =
+            when (entity) {
+                is BonkChoy -> entity.useMegaPunch
+                else -> false
+            }
         state.textureExtra =
             when (entity) {
                 is WallNut -> when {
@@ -153,6 +159,7 @@ class PlantRenderState : LivingEntityRenderState() {
     var customName: String = ""
     var textureExtra: String = ""
     var plantState: PlantState = PlantState.IDLE
+    var useSpecialAction: Boolean = false
     val initAnimationState: AnimationState = AnimationState()
     val idleAnimationState: AnimationState = AnimationState()
     val actionAnimationState: AnimationState = AnimationState()
