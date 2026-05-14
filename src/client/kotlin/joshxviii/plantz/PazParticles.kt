@@ -1,15 +1,24 @@
 package joshxviii.plantz
 
 import joshxviii.plantz.particles.*
+import net.fabricmc.fabric.api.client.particle.v1.ParticleGroupRegistry
 import net.fabricmc.fabric.api.client.particle.v1.ParticleProviderRegistry
-import net.minecraft.client.particle.CampfireSmokeParticle
 import net.minecraft.client.particle.CritParticle
+import net.minecraft.client.particle.ParticleRenderType
 import net.minecraft.client.particle.SpellParticle
 import net.minecraft.client.particle.SplashParticle
 
 object PazParticles {
+    @JvmField
+    val ELECTRIC_ARC = ParticleRenderType(pazResource("electric_arc").toString())
 
     fun registerAll() {
+        // particle groups
+        ParticleGroupRegistry.register(ELECTRIC_ARC) {
+            ElectricArcParticleGroup(it)
+        }
+
+        // particle providers
         val it = ParticleProviderRegistry.getInstance()
         it.register(PazServerParticles.BUTTER_DRIP) { sprite ->
             SplashParticle.Provider(sprite)

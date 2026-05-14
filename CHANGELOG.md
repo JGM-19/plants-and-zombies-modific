@@ -13,7 +13,7 @@
 - Solar battery can be placed and will absorb nearby sun.
   - The light level and redstone level changes depending on the store amount of sun.
 - Added Electrified Mob Effect.
-- Being struck by lightning will now apply the Electrified effect.
+  - Being struck by lightning will now apply the Electrified effect.
 - Added translations for seven new languages.
   - Spanish - @Maxi1978
   - Portuguese - @theplayeris1, @Arthurow

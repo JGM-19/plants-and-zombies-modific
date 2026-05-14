@@ -75,7 +75,7 @@ object PazEntities {
             maxHealth = 30.0,
             attackDamage = 10.0,
             attackKnockback = 0.15,
-            attackRange = 1.85,
+            attackRange = 3.7,
             followRange = 4.75,
         )
     )
@@ -163,6 +163,7 @@ object PazEntities {
         "bonkchoy",
         EntityType.Builder.of(::BonkChoy, MobCategory.CREATURE),
         height = 0.8f,
+        eyeHeight = 0.5f,
         attributes = Plant.Companion.PlantAttributes(
             attackDamage = 4.0,
             attackKnockback = 0.45,

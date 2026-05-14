@@ -12,15 +12,6 @@ import net.minecraft.resources.ResourceKey
 import java.util.function.UnaryOperator
 
 object PazComponents {
-//    @JvmField
-//    val SEED_PACKET: DataComponentType<SeedPacket> = register(
-//        "seed_packet"
-//    ) { b: DataComponentType.Builder<SeedPacket> ->
-//        DataComponentType.builder<SeedPacket>()
-//        .persistent(SeedPacket.CODEC)
-//        .networkSynchronized(SeedPacket.STREAM_CODEC)
-//        .cacheEncoding()
-//    }
 
     @JvmField
     val SUN_COST: DataComponentType<SunCost> = register(

@@ -1,6 +1,7 @@
 package joshxviii.plantz.entity.plant
 
 import joshxviii.plantz.*
+import joshxviii.plantz.ai.PlantState
 import joshxviii.plantz.ai.goal.MeleeAttackActionGoal
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
@@ -58,7 +59,7 @@ class BonkChoy(type: EntityType<out Plant>, level: Level) : Plant(PazEntities.BO
         damageMultiplier = 2.0f,
         actionSuccessEffect = {
             //TODO custom sounds
-            playSound(SoundEvents.WIND_CHARGE_BURST.value(), 1.0f, 1.3f)
+            playSound(SoundEvents.WIND_CHARGE_BURST.value(), 2.0f, 0.8f)
         },
         afterHitEntityEffect = {
             val lookDirection = calculateViewVector(-45f, yHeadRot)
@@ -79,6 +80,11 @@ class BonkChoy(type: EntityType<out Plant>, level: Level) : Plant(PazEntities.BO
     override fun cooldownFinished() {
         useUppercut = random.nextFloat() < 0.45f
         reassessAttack()
+    }
+
+    override fun stateUpdated(state: PlantState) {
+        super.stateUpdated(state)
+        if (state == PlantState.IDLE) reassessAttack()
     }
 
     fun reassessAttack() {

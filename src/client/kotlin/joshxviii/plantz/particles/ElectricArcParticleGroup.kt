@@ -1,6 +1,5 @@
 package joshxviii.plantz.particles
 
-import ElectricArcParticle
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
 import joshxviii.plantz.pazResource
@@ -19,9 +18,6 @@ import net.minecraft.world.phys.Vec3
 
 class ElectricArcParticleGroup(engine: ParticleEngine) : ParticleGroup<ElectricArcParticle>(engine) {
     companion object {
-        @JvmField
-        val ELECTRIC_ARC_GROUP = ParticleRenderType("plantz:ELECTRIC_ARC_GROUP")
-
         val RENDER_TYPE = RenderType.create(
             "electric_arc",
             RenderSetup.builder(RenderPipelines.ENERGY_SWIRL)

@@ -1,6 +1,6 @@
-
+package joshxviii.plantz.particles
 import joshxviii.plantz.ElectricArcParticleOptions
-import joshxviii.plantz.particles.ElectricArcParticleGroup
+import joshxviii.plantz.PazParticles
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.client.particle.Particle
 import net.minecraft.client.particle.ParticleProvider
@@ -33,7 +33,7 @@ class ElectricArcParticle private constructor(
         alpha = (1.0f - age.toFloat()+0.5f / lifetime) * 0.9f
     }
 
-    override fun getGroup(): ParticleRenderType = ElectricArcParticleGroup.ELECTRIC_ARC_GROUP
+    override fun getGroup(): ParticleRenderType = PazParticles.ELECTRIC_ARC
 
     override fun getLightCoords(a: Float): Int = LightCoordsUtil.addSmoothBlockEmission(super.getLightCoords(a), 1.0f)
 
