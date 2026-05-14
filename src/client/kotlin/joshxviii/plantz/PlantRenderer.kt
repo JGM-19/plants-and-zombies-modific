@@ -105,7 +105,7 @@ class PlantRenderer(
         state.customName = entity.customName?.string ?: ""
         state.useSpecialAction =
             when (entity) {
-                is BonkChoy -> entity.useMegaPunch
+                is BonkChoy -> entity.useUppercut
                 else -> false
             }
         state.textureExtra =

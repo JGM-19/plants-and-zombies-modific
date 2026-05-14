@@ -100,11 +100,11 @@ public class BonkChoyAnimation {
 					new Keyframe(0.52F, KeyframeAnimations.scaleVec(1.0F, 1.0F, 1.0F), AnimationChannel.Interpolations.CATMULLROM)
 			))
 			.addAnimation("left_arm2", new AnimationChannel(AnimationChannel.Targets.ROTATION,
-					new Keyframe(0.0F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 10.0F), AnimationChannel.Interpolations.CATMULLROM),
+					new Keyframe(0.0F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM),
 					new Keyframe(0.16F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 10.0F), AnimationChannel.Interpolations.CATMULLROM),
 					new Keyframe(0.24F, KeyframeAnimations.degreeVec(0.0F, 0.0F, -10.0F), AnimationChannel.Interpolations.CATMULLROM),
 					new Keyframe(0.32F, KeyframeAnimations.degreeVec(0.0F, 0.0F, -22.5F), AnimationChannel.Interpolations.CATMULLROM),
-					new Keyframe(0.52F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 10.0F), AnimationChannel.Interpolations.CATMULLROM)
+					new Keyframe(0.52F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM)
 			))
 			.addAnimation("left_arm3", new AnimationChannel(AnimationChannel.Targets.ROTATION,
 					new Keyframe(0.0F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM),
@@ -163,7 +163,7 @@ public class BonkChoyAnimation {
 					new Keyframe(0.68F, KeyframeAnimations.degreeVec(-6.2431F, -27.0477F, 22.6654F), AnimationChannel.Interpolations.CATMULLROM),
 					new Keyframe(0.76F, KeyframeAnimations.degreeVec(45.5262F, 44.7869F, 35.3838F), AnimationChannel.Interpolations.CATMULLROM),
 					new Keyframe(0.88F, KeyframeAnimations.degreeVec(-49.7929F, 56.4115F, -44.6449F), AnimationChannel.Interpolations.CATMULLROM),
-					new Keyframe(1.36F, KeyframeAnimations.degreeVec(-52.2929F, 56.4115F, -44.6449F), AnimationChannel.Interpolations.CATMULLROM),
+					new Keyframe(1.28F, KeyframeAnimations.degreeVec(-52.2929F, 56.4115F, -44.6449F), AnimationChannel.Interpolations.CATMULLROM),
 					new Keyframe(1.52F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM)
 			))
 			.addAnimation("right_arm", new AnimationChannel(AnimationChannel.Targets.SCALE,
@@ -171,7 +171,7 @@ public class BonkChoyAnimation {
 					new Keyframe(0.88F, KeyframeAnimations.scaleVec(2.0F, 2.0F, 1.1F), AnimationChannel.Interpolations.CATMULLROM),
 					new Keyframe(0.96F, KeyframeAnimations.scaleVec(2.2F, 2.2F, 0.9F), AnimationChannel.Interpolations.CATMULLROM),
 					new Keyframe(1.04F, KeyframeAnimations.scaleVec(2.0F, 2.0F, 1.1F), AnimationChannel.Interpolations.CATMULLROM),
-					new Keyframe(1.36F, KeyframeAnimations.scaleVec(2.0F, 2.0F, 1.1F), AnimationChannel.Interpolations.CATMULLROM),
+					new Keyframe(1.28F, KeyframeAnimations.scaleVec(2.0F, 2.0F, 1.1F), AnimationChannel.Interpolations.CATMULLROM),
 					new Keyframe(1.52F, KeyframeAnimations.scaleVec(1.0F, 1.0F, 1.0F), AnimationChannel.Interpolations.CATMULLROM)
 			))
 			.addAnimation("left_arm", new AnimationChannel(AnimationChannel.Targets.ROTATION,
@@ -216,8 +216,8 @@ public class BonkChoyAnimation {
 					new Keyframe(0.2F, KeyframeAnimations.degreeVec(32.5F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM),
 					new Keyframe(0.68F, KeyframeAnimations.degreeVec(32.5F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM),
 					new Keyframe(0.88F, KeyframeAnimations.degreeVec(-27.5F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM),
-					new Keyframe(1.36F, KeyframeAnimations.degreeVec(-10.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM),
-					new Keyframe(1.52F, KeyframeAnimations.degreeVec(-10.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM)
+					new Keyframe(1.32F, KeyframeAnimations.degreeVec(-10.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM),
+					new Keyframe(1.52F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM)
 			))
 			.addAnimation("leaves", new AnimationChannel(AnimationChannel.Targets.ROTATION,
 					new Keyframe(0.0F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM),

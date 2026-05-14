@@ -371,8 +371,10 @@ abstract class Plant(type: EntityType<out Plant>, level: Level) : TamableAnimal(
         val level = this.level()
 
         if (level is ServerLevel) {
-            cooldown--
-            if (cooldown == 0) cooldownFinished()
+            if (cooldown > -1) {
+                if (cooldown == 0) cooldownFinished()
+                cooldown--
+            }
             if (!onValidGround() || isOverlappingWithOther(blockPosition())) {
                 if (--nutrientSupply <= 0) {
                     if (tickCount % 20 == 0) hurtServer(level, damageSources().dryOut(), 2.0f)
@@ -441,7 +443,7 @@ abstract class Plant(type: EntityType<out Plant>, level: Level) : TamableAnimal(
                 specialAnimation.stop()
                 sleepAnimationState.stop()
                 if (isAsleep) state = PlantState.SLEEP
-                if (cooldown > 0) {
+                if (cooldown > -1) {
                     state = PlantState.ACTION
                 }
             }
@@ -451,7 +453,7 @@ abstract class Plant(type: EntityType<out Plant>, level: Level) : TamableAnimal(
             }
             PlantState.COOLDOWN -> {
                 idleAnimationState.startIfStopped(tickCount)
-                if (cooldown <= 0) {
+                if (cooldown < 0) {
                     state = PlantState.IDLE
                 }
                 if (isAsleep) state = PlantState.SLEEP

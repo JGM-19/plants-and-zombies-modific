@@ -25,7 +25,7 @@ class ElectrifyMobEffect(
     companion object {
         const val ZAP_INTERVAL: Int = 12
         const val ZAP_RANGE: Double = 3.0
-        const val ZAP_DAMAGE: Float = 1.0f
+        const val ZAP_DAMAGE: Float = 2.5f
     }
 
     // chain lightening effect to nearby mobs
@@ -41,7 +41,7 @@ class ElectrifyMobEffect(
         }
         val nearbyTargets = level.getNearbyEntities(LivingEntity::class.java, targetConditions, mob, mob.boundingBox.inflate(ZAP_RANGE))
         nearbyTargets.randomOrNull()?.let {
-            zap(level, it, rootCauseEntity)
+            zap(level, it, causeEntity = rootCauseEntity)
             level.sendParticles(
                 ElectricArcParticleOptions(// electric arc particle
                     Vec3(it.getRandomX(0.2), it.randomY, it.getRandomZ(0.2)),
@@ -62,13 +62,13 @@ class ElectrifyMobEffect(
     }
 
     override fun applyEffectTick(level: ServerLevel, mob: LivingEntity, amplification: Int): Boolean {
-        if (mob.isInWater) zap(level, mob)
+        if (mob.isInWater) zap(level, mob, 1.25f)
         return true
     }
 
-    private fun zap(level: ServerLevel, target: LivingEntity, causeEntity: Entity? = null) {
+    private fun zap(level: ServerLevel, target: LivingEntity, damage: Float = ZAP_DAMAGE, causeEntity: Entity? = null) {
         val source = target.damageSources().source(PazDamageTypes.ZAP,null,causeEntity)
-        target.hurtServer(level, source, ZAP_DAMAGE)
+        target.hurtServer(level, source, damage)
         level.sendParticles(
             PazServerParticles.ELECTRIFIED,
             target.x, target.y + target.boundingBox.ysize*0.5, target.z, 10,

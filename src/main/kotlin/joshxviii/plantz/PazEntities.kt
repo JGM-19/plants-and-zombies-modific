@@ -165,9 +165,9 @@ object PazEntities {
         height = 0.8f,
         attributes = Plant.Companion.PlantAttributes(
             attackDamage = 4.0,
-            attackKnockback = 0.2,
-            attackRange = 1.75,
-            followRange = 4.0,
+            attackKnockback = 0.45,
+            attackRange = 2.25,
+            followRange = 4.5,
         )
     )
     @JvmField val TANGLE_KELP: EntityType<TangleKelp> = registerPlant(

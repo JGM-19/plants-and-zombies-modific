@@ -27,6 +27,7 @@ class BeamAttackGoal(
     actionPredicate: Predicate<PathfinderMob> = Predicate { true },
     val beamRange : Double = 10.0,
     val beamWidth : Double = 3.25,
+    val damageMultiplier: Float = 1.0f,
     val damageType: ResourceKey<DamageType> = PazDamageTypes.PLANT,
     val beamParticles : ParticleOptions? = null,
     val afterHitEntityEffect: (target: LivingEntity) -> Unit = {},
@@ -70,7 +71,7 @@ class BeamAttackGoal(
             val entityRadiusApprox = target.boundingBox.size / 2.0
             if (distToRay <= (beamWidth / 2.0 + entityRadiusApprox)) {
 
-                val damage : Float = usingEntity.attributes.getValue(Attributes.ATTACK_DAMAGE).toFloat()
+                val damage : Float = usingEntity.attributes.getValue(Attributes.ATTACK_DAMAGE).toFloat() * damageMultiplier
                 val knockback : Double = usingEntity.attributes.getValue(Attributes.ATTACK_KNOCKBACK)
                 val source = usingEntity.damageSources().source(damageType, usingEntity,
                     if (PazConfig.PLAYER_CREDIT_FOR_PLANT_KILLS && usingEntity is OwnableEntity) usingEntity.rootOwner else null)
