@@ -66,7 +66,7 @@ object PazSpawnPlacements {
         registerSpawnPlacement(PazEntities.MELON_PULT, Plant::checkPlantSpawnRules)
 
         addBiomeSpawn(PazTags.Biomes.HAS_BONK_CHOY, PazEntities.BONK_CHOY,
-            weight = 5, minGroupSize = 1, maxGroupSize = 1)
+            weight = 6, minGroupSize = 1, maxGroupSize = 1)
         registerSpawnPlacement(PazEntities.BONK_CHOY, Plant::checkPlantSpawnRules)
 
         addBiomeSpawn(PazTags.Biomes.HAS_TANGLE_KELP, PazEntities.TANGLE_KELP,
@@ -110,7 +110,7 @@ object PazSpawnPlacements {
         registerSpawnPlacement(PazEntities.SUN_SHROOM, Plant::checkPlantSpawnRules)
 
         addBiomeSpawn(PazTags.Biomes.HAS_COFFEE_BEAN, PazEntities.COFFEE_BEAN,
-            weight = 10, minGroupSize = 2, maxGroupSize = 5)
+            weight = 5, minGroupSize = 2, maxGroupSize = 5)
         registerSpawnPlacement(PazEntities.COFFEE_BEAN, CoffeeBean::checkCoffeeBeanSpawnRules, Heightmap.Types.MOTION_BLOCKING)
         // endregion
 

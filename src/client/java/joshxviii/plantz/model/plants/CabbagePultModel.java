@@ -2,9 +2,6 @@ package joshxviii.plantz.model.plants;
 
 import joshxviii.plantz.PlantRenderState;
 import joshxviii.plantz.animation.plants.CabbagePultAnimation;
-import joshxviii.plantz.animation.plants.CactusAnimation;
-import net.minecraft.client.animation.KeyframeAnimation;
-import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;

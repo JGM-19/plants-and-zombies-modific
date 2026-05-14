@@ -9,6 +9,9 @@
 # Changelog 1.4.1
 - Solar battery can be placed and will absorb nearby sun.
   - The light level and redstone level changes depending on the store amount of sun.
+- Added Electrified Mob Effect.
+  - Mobs with the effect will zap nearby entities while in water or hit with any other type of electric damage.
+  - Mobs with a higher level of the effect will apply a lower level of the electrified effect to entities it zapped. The higher the level, the more the effect will chain to other mobs.
 - Adjusted spawn rates and drop chances.
 - Reduced sun fuel amount by half.
 - Made sun a little easier to pick up

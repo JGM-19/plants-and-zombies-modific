@@ -21,7 +21,8 @@ import net.minecraft.world.item.DyeColor
 
 class ProjectileRenderer(
     val model: EntityModel<ProjectileRenderState>,
-    context: EntityRendererProvider.Context
+    context: EntityRendererProvider.Context,
+    val emissive: Boolean = false,
 ) : EntityRenderer<Projectile, ProjectileRenderState>(
     context
 ) {
@@ -42,7 +43,7 @@ class ProjectileRenderer(
             poseStack,
             RenderType.create(
                 "plant_projectile",
-                RenderSetup.builder(if (state.emissive) RenderPipelines.EYES else RenderPipelines.ENTITY_CUTOUT)
+                RenderSetup.builder(if (emissive) RenderPipelines.ENERGY_SWIRL else RenderPipelines.ENTITY_CUTOUT)
                     .withTexture("Sampler0", getTextureLocation(state))
                     .useLightmap()
                     .sortOnUpload()
@@ -65,7 +66,6 @@ class ProjectileRenderer(
 
     override fun extractRenderState(entity: Projectile, state: ProjectileRenderState, partialTick: Float) {
         super.extractRenderState(entity, state, partialTick)
-        if (entity is PeaFire) state.emissive = true
         if (entity is PaintBall) state.color = entity.dyeColor
         state.xRot = entity.getXRot(partialTick)
         state.yRot = entity.getYRot(partialTick)
@@ -82,6 +82,5 @@ class ProjectileRenderState : EntityRenderState() {
     var xRot: Float = 0f
     var yRot: Float = 0f
     var texturePath: String = "default"
-    var emissive: Boolean = false
     var color: DyeColor? = null
 }

@@ -13,6 +13,7 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec2
+import net.minecraft.world.phys.Vec3
 
 class PeaElectric(
     level: Level,
@@ -21,6 +22,17 @@ class PeaElectric(
 ) : PazProjectile(PazEntities.PEA_ELECTRIC, level, owner, spawnOffset,
     PazDamageTypes.PLANT_ELECTRIC
 ) {
+
+    override fun tick() {
+        super.tick()
+        if (tickCount % 2 == 0) spawnParticle(
+            PazServerParticles.ELECTRIFIED,
+            amount = 1,
+            spread = Vec3(0.01,0.01,0.01),
+            speed = 0.1
+        )
+    }
+
     override fun afterHitEntityEffect(target: LivingEntity) {
         super.afterHitEntityEffect(target)
     }

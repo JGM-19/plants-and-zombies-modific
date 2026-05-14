@@ -25,6 +25,7 @@ class ElectrifyMobEffect(
     companion object {
         const val ZAP_INTERVAL: Int = 12
         const val ZAP_RANGE: Double = 3.0
+        const val ZAP_DAMAGE: Float = 1.0f
     }
 
     // chain lightening effect to nearby mobs
@@ -67,7 +68,7 @@ class ElectrifyMobEffect(
 
     private fun zap(level: ServerLevel, target: LivingEntity, causeEntity: Entity? = null) {
         val source = target.damageSources().source(PazDamageTypes.ZAP,null,causeEntity)
-        target.hurtServer(level, source, 0.01f)
+        target.hurtServer(level, source, ZAP_DAMAGE)
         level.sendParticles(
             PazServerParticles.ELECTRIFIED,
             target.x, target.y + target.boundingBox.ysize*0.5, target.z, 10,
@@ -82,6 +83,10 @@ class ElectrifyMobEffect(
     override fun shouldApplyEffectTickThisTick(tickCount: Int, amplification: Int): Boolean {
         val interval = ZAP_INTERVAL shr amplification
         return if (interval > 0) tickCount % interval == 0 else true
+    }
+
+    override fun onEffectAdded(effectInstance: MobEffectInstance, entity: LivingEntity) {
+        super.onEffectAdded(effectInstance, entity)
     }
 
     override fun onEffectStarted(effectInstance: MobEffectInstance, entity: LivingEntity) {

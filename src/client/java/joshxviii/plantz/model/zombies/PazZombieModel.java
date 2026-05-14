@@ -2,10 +2,8 @@ package joshxviii.plantz.model.zombies;
 
 import joshxviii.plantz.PazEntities;
 import joshxviii.plantz.PazZombieRenderState;
-import joshxviii.plantz.animation.plants.PlantAnimations;
-import joshxviii.plantz.animation.zombies.ZombieAnimations;
+import joshxviii.plantz.animation.zombies.PazZombieAnimations;
 import net.minecraft.client.animation.KeyframeAnimation;
-import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -27,7 +25,7 @@ public class PazZombieModel extends ZombieModel<@NotNull ZombieRenderState> {
             final ModelPart root
     ) {
         super(root.hasChild("root") ? root.getChild("root") : root);
-        if (initAnimation==null) this.initAnimation = ZombieAnimations.rise.bake(root.hasChild("root") ? root.getChild("root") : root);
+        if (initAnimation==null) this.initAnimation = PazZombieAnimations.emerge.bake(root.hasChild("root") ? root.getChild("root") : root);
         else this.initAnimation = initAnimation;
     }
 
