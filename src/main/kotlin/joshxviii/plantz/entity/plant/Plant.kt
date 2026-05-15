@@ -55,7 +55,6 @@ import net.minecraft.world.entity.monster.Enemy
 import net.minecraft.world.entity.monster.zombie.Zombie
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.item.component.AttackRange
 import net.minecraft.world.level.*
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.portal.TeleportTransition
@@ -339,6 +338,18 @@ abstract class Plant(type: EntityType<out Plant>, level: Level) : TamableAnimal(
         )
     }
 
+    protected fun <T: Plant> convertToPlantType(
+        plantType: EntityType<T>,
+        afterConversion: (plantEntity: Plant) -> Unit = {}) {
+        convertTo(plantType, ConversionParams.single(this, true, true)) { newPlant ->
+            owner?.let {
+                if (it is Player) newPlant.tame(it)
+                else newPlant.owner = it
+            }
+            afterConversion(newPlant)
+        }
+    }
+
     fun hasPlantPotProtection(): Boolean= getBlockBelow().`is`(PazTags.BlockTags.PLANT_POT) || isAttached()
 
     override fun setPos(x: Double, y: Double, z: Double) {
@@ -489,11 +500,12 @@ abstract class Plant(type: EntityType<out Plant>, level: Level) : TamableAnimal(
         return success
     }
 
+    open fun getZenGrownSeedType(): EntityType<*> = type
     fun awardSeedPacket(player: Player) {
         val level = level() as? ServerLevel ?: return
         receivedSun = 0
         receivedWater = 0
-        val stack = SeedPacketItem.stackFor(this.type)
+        val stack = SeedPacketItem.stackFor(getZenGrownSeedType())
         val itemEntity = ItemEntity(level, x, y + 0.5, z, stack)
         level.addFreshEntity(itemEntity)
         playSound(SoundEvents.ROOTED_DIRT_BREAK)

@@ -42,6 +42,14 @@
         }
       }
     },
+    "plantz:explode_o_nut": {
+      "trigger": "minecraft:tame_animal",
+      "conditions": {
+        "entity": {
+          "type": "plantz:explode_o_nut"
+        }
+      }
+    },
     "plantz:chomper": {
       "trigger": "minecraft:tame_animal",
       "conditions": {
@@ -66,14 +74,6 @@
         }
       }
     },
-    "plantz:ice_peashooter": {
-      "trigger": "minecraft:tame_animal",
-      "conditions": {
-        "entity": {
-          "type": "plantz:ice_peashooter"
-        }
-      }
-    },
     "plantz:repeater": {
       "trigger": "minecraft:tame_animal",
       "conditions": {
@@ -82,11 +82,27 @@
         }
       }
     },
+    "plantz:ice_peashooter": {
+      "trigger": "minecraft:tame_animal",
+      "conditions": {
+        "entity": {
+          "type": "plantz:ice_peashooter"
+        }
+      }
+    },
     "plantz:fire_peashooter": {
       "trigger": "minecraft:tame_animal",
       "conditions": {
         "entity": {
           "type": "plantz:fire_peashooter"
+        }
+      }
+    },
+    "plantz:electric_peashooter": {
+      "trigger": "minecraft:tame_animal",
+      "conditions": {
+        "entity": {
+          "type": "plantz:electric_peashooter"
         }
       }
     },
@@ -127,6 +143,14 @@
       "conditions": {
         "entity": {
           "type": "plantz:bonkchoy"
+        }
+      }
+    },
+    "plantz:tanglekelp": {
+      "trigger": "minecraft:tame_animal",
+      "conditions": {
+        "entity": {
+          "type": "plantz:tanglekelp"
         }
       }
     },

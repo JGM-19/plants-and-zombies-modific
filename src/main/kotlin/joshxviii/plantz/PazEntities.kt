@@ -41,7 +41,7 @@ object PazEntities {
             }
 
             if (entity is Mob && entity.`is`(ATTACKS_PLANTS) && entity !is ZombifiedPiglin) {
-                (entity as MobAccessor).targetSelector.addGoal(2, NearestAttackableTargetGoal(entity, WallNut::class.java, 6, true, true) { target, level -> ((target as? WallNut)?.let { it.distanceToSqr(entity) < 3.5 } ?: false)})
+                (entity as MobAccessor).targetSelector.addGoal(2, NearestAttackableTargetGoal(entity, WallNut::class.java, 6, true, true) { target, level -> ((target as? WallNut ?: target as? ExplodeONut)?.let { it.distanceToSqr(entity) < 3.5 } ?: false)})
                 (entity as MobAccessor).targetSelector.addGoal(3, NearestAttackableTargetGoal(entity, Plant::class.java, 5, true, false) { target, level ->
                     target !is WallNut && !target.`is`(IGNORED_BY_PLANT_ATTACKERS) })
             }
@@ -67,6 +67,15 @@ object PazEntities {
             maxHealth = 50.0,
         )
     )
+    @JvmField val EXPLODE_O_NUT: EntityType<ExplodeONut> = registerPlant(
+        "explode_o_nut",
+        EntityType.Builder.of(::ExplodeONut, MobCategory.CREATURE),
+        width = 1.0f,
+        height = 1.1f,
+        attributes = Plant.Companion.PlantAttributes(
+            maxHealth = 40.0,
+        )
+    )
     @JvmField val CHOMPER: EntityType<Chomper> = registerPlant(
         "chomper",
         EntityType.Builder.of(::Chomper, MobCategory.CREATURE),
@@ -75,7 +84,7 @@ object PazEntities {
             maxHealth = 30.0,
             attackDamage = 10.0,
             attackKnockback = 0.15,
-            attackRange = 3.7,
+            attackRange = 3.0,
             followRange = 4.75,
         )
     )
@@ -97,6 +106,10 @@ object PazEntities {
             followRange = 3.75,
         )
     )
+    @JvmField val REPEATER: EntityType<Repeater> = registerPlant(
+        "repeater",
+        EntityType.Builder.of(::Repeater, MobCategory.CREATURE),
+    )
     @JvmField val ICE_PEA_SHOOTER: EntityType<IcePeaShooter> = registerPlant(
         "ice_peashooter",
         EntityType.Builder.of(::IcePeaShooter, MobCategory.CREATURE),
@@ -104,15 +117,18 @@ object PazEntities {
             attackDamage = 1.25,
         )
     )
-    @JvmField val REPEATER: EntityType<Repeater> = registerPlant(
-        "repeater",
-        EntityType.Builder.of(::Repeater, MobCategory.CREATURE),
-    )
     @JvmField val FIRE_PEA_SHOOTER: EntityType<FirePeaShooter> = registerPlant(
         "fire_peashooter",
         EntityType.Builder.of(::FirePeaShooter, MobCategory.CREATURE).fireImmune(),
         attributes = Plant.Companion.PlantAttributes(
             attackDamage = 1.25,
+        )
+    )
+    @JvmField val ELECTRIC_PEA_SHOOTER: EntityType<ElectricPeaShooter> = registerPlant(
+        "electric_peashooter",
+        EntityType.Builder.of(::ElectricPeaShooter, MobCategory.CREATURE),
+        attributes = Plant.Companion.PlantAttributes(
+            attackDamage = 1.0,
         )
     )
     @JvmField val CACTUS: EntityType<Cactus> = registerPlant(

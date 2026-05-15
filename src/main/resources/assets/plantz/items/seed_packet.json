@@ -26,6 +26,13 @@
         }
       },
       {
+        "when": { "id": "plantz:explode_o_nut" },
+        "model": {
+          "type": "minecraft:model",
+          "model": "plantz:item/seed_packet/explode_o_nut"
+        }
+      },
+      {
         "when": { "id": "plantz:chomper" },
         "model": {
           "type": "minecraft:model",
@@ -47,13 +54,6 @@
         }
       },
       {
-        "when": { "id": "plantz:ice_peashooter" },
-        "model": {
-          "type": "minecraft:model",
-          "model": "plantz:item/seed_packet/ice_peashooter"
-        }
-      },
-      {
         "when": { "id": "plantz:repeater" },
         "model": {
           "type": "minecraft:model",
@@ -61,10 +61,24 @@
         }
       },
       {
+        "when": { "id": "plantz:ice_peashooter" },
+        "model": {
+          "type": "minecraft:model",
+          "model": "plantz:item/seed_packet/ice_peashooter"
+        }
+      },
+      {
         "when": { "id": "plantz:fire_peashooter" },
         "model": {
           "type": "minecraft:model",
           "model": "plantz:item/seed_packet/fire_peashooter"
+        }
+      },
+      {
+        "when": { "id": "plantz:electric_peashooter" },
+        "model": {
+          "type": "minecraft:model",
+          "model": "plantz:item/seed_packet/electric_peashooter"
         }
       },
       {
