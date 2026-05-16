@@ -28,7 +28,7 @@ class ElectricArcParticleGroup(engine: ParticleEngine) : ParticleGroup<ElectricA
     companion object {
         val RENDER_TYPE = RenderType.create(
             "electric_arc",
-            RenderSetup.builder(RenderPipelines.ENERGY_SWIRL)
+            RenderSetup.builder(RenderPipelines.BEACON_BEAM_TRANSLUCENT)
                 .withTexture("Sampler0", pazResource("textures/particle/electric_arc.png"))
                 .setOutputTarget(OutputTarget.MAIN_TARGET)
                 .createRenderSetup()
@@ -93,13 +93,11 @@ class ElectricArcParticleGroup(engine: ParticleEngine) : ParticleGroup<ElectricA
             val width = state.thickness * ageFactor
 
             // Main bright arc
-            renderSegmentedArc(buffer, state, width, mainAlpha, 10, 1.05f)
+            renderSegmentedArc(buffer, state, width, mainAlpha, 10, 1.05f, randomInt = state.random.nextFloat())
 
             // Secondary arcs for electricity feel
-            if (ageFactor < 0.65f) {
-                renderSegmentedArc(buffer, state, width * 0.55f, mainAlpha * 0.7f, 8, 1.35f, 0.08)
-                renderSegmentedArc(buffer, state, width * 0.35f, mainAlpha * 0.5f, 7, 1.6f, -0.10)
-            }
+            if (ageFactor < 0.75f) renderSegmentedArc(buffer, state, width * 0.55f, mainAlpha, 8, 1.35f, 0.08, state.random.nextFloat())
+            if (ageFactor < 0.74f) renderSegmentedArc(buffer, state, width * 0.35f, mainAlpha, 7, 1.6f, -0.10, state.random.nextFloat())
         }
 
         private fun renderSegmentedArc(
@@ -109,11 +107,12 @@ class ElectricArcParticleGroup(engine: ParticleEngine) : ParticleGroup<ElectricA
             alpha: Float,
             segments: Int,
             jitterMultiplier: Float = 1.0f,
-            yOffset: Double = 0.0
+            yOffset: Double = 0.0,
+            randomInt: Float = 0f
         ) {
             var current = state.startPos
             val dir = state.targetPos.subtract(state.startPos)
-            val twist = state.random.nextFloat() * Mth.TWO_PI
+            val twist = Mth.TWO_PI * randomInt
 
             for (i in 0 until segments) {
                 val t = (i + 1.0) / segments
@@ -146,27 +145,28 @@ class ElectricArcParticleGroup(engine: ParticleEngine) : ParticleGroup<ElectricA
             alpha: Float,
             twist: Float
         ) {
-            val diff = to.subtract(from).normalize()
-
-            var perp = Vec3(-diff.z, 0.0, diff.x).normalize()
-
-            perp = perp.xRot(twist)
-
-            val hw = width * 0.5
-
-            val p1 = from.add(perp.scale(hw))
-            val p2 = from.subtract(perp.scale(hw))
-            val p3 = to.subtract(perp.scale(hw))
-            val p4 = to.add(perp.scale(hw))
-
             val r = ((color shr 16) and 0xFF) / 255f
             val g = ((color shr 8) and 0xFF) / 255f
             val b = (color and 0xFF) / 255f
 
-            vertex(buffer, p1, r, g, b, alpha)
-            vertex(buffer, p2, r, g, b, alpha)
-            vertex(buffer, p3, r, g, b, alpha)
-            vertex(buffer, p4, r, g, b, alpha)
+            val hw = width * 0.5
+
+            repeat(2) {
+                val diff = to.subtract(from).normalize()
+                val neg = if (it == 0) 1 else -1
+                var perp = Vec3(-diff.z * neg, 0.0, diff.x * neg).normalize()
+                perp = perp.zRot(twist)
+
+                val p1 = from.add(perp.scale(hw))
+                val p2 = from.subtract(perp.scale(hw))
+                val p3 = to.subtract(perp.scale(hw))
+                val p4 = to.add(perp.scale(hw))
+
+                vertex(buffer, p1, r, g, b, alpha)
+                vertex(buffer, p2, r, g, b, alpha)
+                vertex(buffer, p3, r, g, b, alpha)
+                vertex(buffer, p4, r, g, b, alpha)
+            }
         }
 
         private fun vertex(buffer: VertexConsumer, pos: Vec3, r: Float, g: Float, b: Float, a: Float) {

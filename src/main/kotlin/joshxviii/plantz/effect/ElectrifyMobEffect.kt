@@ -41,23 +41,22 @@ class ElectrifyMobEffect(
         }
         val nearbyTargets = level.getNearbyEntities(LivingEntity::class.java, targetConditions, mob, mob.boundingBox.inflate(ZAP_RANGE))
         nearbyTargets.randomOrNull()?.let {
-            zap(level, it, causeEntity = rootCauseEntity)
-            level.sendParticles(
-                ElectricArcParticleOptions(// electric arc particle
-                    Vec3(it.getRandomX(0.2), it.randomY, it.getRandomZ(0.2)),
-                    color = 0xFFFFFF,
-                    thickness = 0.15f
-                ),
-                mob.getRandomX(0.2), mob.randomY, mob.getRandomZ(0.2),
-                1, 0.0, 0.0, 0.0, 0.0
-            )
-
             mob.getEffect(PazEffects.ELECTRIFIED)?.let { effect ->
                 if (effect.amplifier>0) {
                     val duration = if (effect.isInfiniteDuration) 300 else (effect.duration*0.25f).toInt()
                     it.addEffect(MobEffectInstance(PazEffects.ELECTRIFIED, duration.coerceAtMost(300), effect.amplifier-1))
                 }
             }
+            zap(level, it, causeEntity = rootCauseEntity)
+            level.sendParticles(
+                ElectricArcParticleOptions(// electric arc particle
+                    Vec3(it.getRandomX(0.2), it.randomY, it.getRandomZ(0.2)),
+                    color = 0xBDFDF5,
+                    thickness = 0.15f
+                ),
+                mob.getRandomX(0.2), mob.randomY, mob.getRandomZ(0.2),
+                1, 0.0, 0.0, 0.0, 0.0
+            )
         }
     }
 

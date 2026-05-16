@@ -145,8 +145,8 @@ object PazEntities {
     @JvmField val LIGHTNING_REED: EntityType<LightningReed> = registerPlant(
         "lightning_reed",
         EntityType.Builder.of(::LightningReed, MobCategory.CREATURE),
-        width = 0.45f,
-        height = 1.25f,
+        width = 0.4f,
+        height = 1.0f,
         eyeHeight = 0.7f,
         attributes = Plant.Companion.PlantAttributes(
             attackDamage = 1.0,

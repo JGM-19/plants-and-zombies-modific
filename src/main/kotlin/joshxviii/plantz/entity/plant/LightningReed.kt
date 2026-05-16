@@ -31,17 +31,17 @@ class LightningReed(type: EntityType<out Plant>, level: Level) : Plant(PazEntiti
             actionDelay = 6,
             cooldownTime = 16,
             damageType = PazDamageTypes.PLANT_ELECTRIC,
-            afterHitEntityEffect = {
-                it.addEffect(MobEffectInstance(PazEffects.ELECTRIFIED, 100, 3))
+            beforeHitEntityEffect = {
+                it.addEffect(MobEffectInstance(PazEffects.ELECTRIFIED, 100, 2))
                 val eyeHeight = eyeHeight.toDouble()
-                val direction = this.headLookAngle.scale(0.4)
+                val direction = this.headLookAngle.scale(0.5)
                 (level() as? ServerLevel)?.sendParticles(
                     ElectricArcParticleOptions(
-                        Vec3(it.getRandomX(0.2), it.randomY*0.75, it.getRandomZ(0.2)),
-                        color = 0xFFFFFF,
+                        Vec3(it.getRandomX(0.2), it.randomY, it.getRandomZ(0.2)),
+                        color = 0xBDFDF5,
                         thickness = 0.1f
                     ),
-                    x + direction.x, y + eyeHeight - 0.1, z + direction.z,
+                    x + direction.x, y + eyeHeight, z + direction.z,
                     1, 0.0, 0.0, 0.0, 0.0
                 )
             }

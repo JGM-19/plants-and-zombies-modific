@@ -22,6 +22,7 @@ open class MeleeAttackActionGoal(
     actionPredicate: Predicate<PathfinderMob> = Predicate { true },
     val damageMultiplier: Float = 1.0f,
     val damageType: ResourceKey<DamageType> = PazDamageTypes.PLANT,
+    val beforeHitEntityEffect: (target: LivingEntity) -> Unit = {},
     val afterHitEntityEffect: (target: LivingEntity) -> Unit = {},
 ) : ActionGoal(usingEntity, cooldownTime, actionDelay, actionStartEffect, actionSuccessEffect, actionEndEffect, actionPredicate) {
 
@@ -48,6 +49,7 @@ open class MeleeAttackActionGoal(
         val source = usingEntity.damageSources().source(damageType, usingEntity,
             if (PazConfig.PLAYER_CREDIT_FOR_PLANT_KILLS && usingEntity is OwnableEntity) usingEntity.rootOwner else usingEntity)
 
+        beforeHitEntityEffect(target)
         if (target.hurtServer(usingEntity.level() as ServerLevel, source, damage)) {
             target.knockback(
                 knockback,
