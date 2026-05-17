@@ -19,6 +19,7 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.ComponentSerialization
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundEvents
@@ -73,6 +74,10 @@ class MailboxBlockEntity(
                 setChanged()
                 playSound(SoundEvents.VAULT_CLOSE_SHUTTER, 1.7f)
             }
+        }
+
+        if (tickCount % 100 == 0) {
+            (level as? ServerLevel)?.getMailboxMailQueue()?.deliverTo(this)
         }
     }
 

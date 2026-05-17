@@ -6,6 +6,7 @@ import joshxviii.plantz.PazBlocks
 import joshxviii.plantz.PazCriteria
 import joshxviii.plantz.block.entity.MailboxBlockEntity
 import joshxviii.plantz.block.entity.MailboxManager
+import joshxviii.plantz.inventory.MailboxMenu
 import joshxviii.plantz.networking.MailboxListResponsePayload
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
 import net.minecraft.core.BlockPos
@@ -105,11 +106,13 @@ class MailboxBlock(
     ): InteractionResult {
         if (!level.isClientSide) {
             (level.getBlockEntity(pos) as? MailboxBlockEntity).let { currentMailbox ->
-                player.openMenu(currentMailbox)
-                ServerPlayNetworking.send(player as ServerPlayer, MailboxListResponsePayload(level.dimension(), MailboxManager.getMailboxesInLevel(level)
+                val mailboxes = MailboxManager.getMailboxesInLevel(level)
                     .filter { it.blockPos != pos }
                     .sortedBy { it.blockPos.distSqr(pos) }
-                ))
+
+                player.openMenu(currentMailbox)
+                (player.containerMenu as? MailboxMenu)?.availableMailboxes = mailboxes
+                ServerPlayNetworking.send(player as ServerPlayer, MailboxListResponsePayload(level.dimension(), mailboxes))
             }
         }
         return InteractionResult.SUCCESS
