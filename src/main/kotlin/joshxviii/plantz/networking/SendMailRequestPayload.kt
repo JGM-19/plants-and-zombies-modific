@@ -3,6 +3,7 @@ package joshxviii.plantz.networking
 import joshxviii.plantz.block.MailboxState
 import joshxviii.plantz.block.entity.MailboxBlockEntity
 import joshxviii.plantz.block.entity.MailboxMailQueue
+import joshxviii.plantz.block.entity.MailboxManager
 import joshxviii.plantz.block.entity.getMailboxMailQueue
 import joshxviii.plantz.inventory.MailboxMenu
 import joshxviii.plantz.pazResource
@@ -46,6 +47,7 @@ data class SendMailRequestPayload(val targetPos: BlockPos) : CustomPacketPayload
                 MailboxMailQueue.tryInsertIntoMailbox(targetBE, stack)
             } else if (level.isLoaded(targetPos)) {
                 level.getMailboxMailQueue().discardFor(targetPos)
+                MailboxManager.unregisterMailbox(level, targetPos)
                 false
             } else {
                 level.getMailboxMailQueue().queue(targetPos, stack)

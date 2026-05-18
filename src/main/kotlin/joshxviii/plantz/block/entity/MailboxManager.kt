@@ -18,7 +18,6 @@ object MailboxManager {
         val levelKey = level.dimension()
         val pos = blockEntity.blockPos
         mailboxes.getOrPut(levelKey) { mutableSetOf() }.add(pos)
-        val data = blockEntity.asMailBoxData()
     }
 
     fun unregisterMailbox(level: Level, pos: BlockPos) {

@@ -47,7 +47,7 @@ object PazMain : ModInitializer {
 		}
 		ServerBlockEntityEvents.BLOCK_ENTITY_UNLOAD.register { blockEntity, level ->
 			(blockEntity as? MailboxBlockEntity)?.let {
-				MailboxManager.unregisterMailbox(level, blockEntity.blockPos)
+				//MailboxManager.unregisterMailbox(level, blockEntity.blockPos)
 			}
 		}
 

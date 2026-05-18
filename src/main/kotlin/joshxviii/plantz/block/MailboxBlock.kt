@@ -23,6 +23,7 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.context.BlockPlaceContext
 import net.minecraft.world.level.BlockGetter
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.LevelAccessor
 import net.minecraft.world.level.LevelReader
 import net.minecraft.world.level.ScheduledTickAccess
 import net.minecraft.world.level.block.*
@@ -116,6 +117,11 @@ class MailboxBlock(
             }
         }
         return InteractionResult.SUCCESS
+    }
+
+    override fun destroy(level: LevelAccessor, pos: BlockPos, state: BlockState) {
+        super.destroy(level, pos, state)
+        MailboxManager.unregisterMailbox(level as Level, pos)
     }
 
     override fun rotate(state: BlockState, rotation: Rotation): BlockState = state.setValue(FACING, rotation.rotate(state.getValue(FACING)))
