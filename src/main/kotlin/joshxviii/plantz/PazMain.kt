@@ -2,6 +2,7 @@ package joshxviii.plantz
 
 import joshxviii.plantz.block.entity.MailboxBlockEntity
 import joshxviii.plantz.block.entity.MailboxManager
+import joshxviii.plantz.block.entity.getMailboxMailQueue
 import joshxviii.plantz.networking.ServerConfigResponsePayload
 import joshxviii.plantz.raid.getZombieRaids
 import net.fabricmc.api.EnvType
@@ -41,11 +42,12 @@ object PazMain : ModInitializer {
 		ServerBlockEntityEvents.BLOCK_ENTITY_LOAD.register { blockEntity, level ->
 			(blockEntity as? MailboxBlockEntity)?.let {
 				MailboxManager.registerMailbox(level, it)
+				level.getMailboxMailQueue().deliverTo(it)
 			}
 		}
 		ServerBlockEntityEvents.BLOCK_ENTITY_UNLOAD.register { blockEntity, level ->
 			(blockEntity as? MailboxBlockEntity)?.let {
-				MailboxManager.unregisterMailbox(level, blockEntity.blockPos)
+				//MailboxManager.unregisterMailbox(level, blockEntity.blockPos)
 			}
 		}
 
@@ -67,4 +69,3 @@ object PazMain : ModInitializer {
 		PazJukeboxSongs.initialize()
 	}
 }
-

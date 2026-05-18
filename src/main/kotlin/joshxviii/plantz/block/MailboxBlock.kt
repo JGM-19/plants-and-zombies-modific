@@ -6,6 +6,7 @@ import joshxviii.plantz.PazBlocks
 import joshxviii.plantz.PazCriteria
 import joshxviii.plantz.block.entity.MailboxBlockEntity
 import joshxviii.plantz.block.entity.MailboxManager
+import joshxviii.plantz.inventory.MailboxMenu
 import joshxviii.plantz.networking.MailboxListResponsePayload
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
 import net.minecraft.core.BlockPos
@@ -22,6 +23,7 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.context.BlockPlaceContext
 import net.minecraft.world.level.BlockGetter
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.LevelAccessor
 import net.minecraft.world.level.LevelReader
 import net.minecraft.world.level.ScheduledTickAccess
 import net.minecraft.world.level.block.*
@@ -105,14 +107,21 @@ class MailboxBlock(
     ): InteractionResult {
         if (!level.isClientSide) {
             (level.getBlockEntity(pos) as? MailboxBlockEntity).let { currentMailbox ->
-                player.openMenu(currentMailbox)
-                ServerPlayNetworking.send(player as ServerPlayer, MailboxListResponsePayload(level.dimension(), MailboxManager.getMailboxesInLevel(level)
+                val mailboxes = MailboxManager.getMailboxesInLevel(level)
                     .filter { it.blockPos != pos }
                     .sortedBy { it.blockPos.distSqr(pos) }
-                ))
+
+                player.openMenu(currentMailbox)
+                (player.containerMenu as? MailboxMenu)?.availableMailboxes = mailboxes
+                ServerPlayNetworking.send(player as ServerPlayer, MailboxListResponsePayload(level.dimension(), mailboxes))
             }
         }
         return InteractionResult.SUCCESS
+    }
+
+    override fun destroy(level: LevelAccessor, pos: BlockPos, state: BlockState) {
+        super.destroy(level, pos, state)
+        MailboxManager.unregisterMailbox(level as Level, pos)
     }
 
     override fun rotate(state: BlockState, rotation: Rotation): BlockState = state.setValue(FACING, rotation.rotate(state.getValue(FACING)))

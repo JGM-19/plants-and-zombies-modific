@@ -2,6 +2,9 @@ package joshxviii.plantz.networking
 
 import joshxviii.plantz.block.MailboxState
 import joshxviii.plantz.block.entity.MailboxBlockEntity
+import joshxviii.plantz.block.entity.MailboxMailQueue
+import joshxviii.plantz.block.entity.MailboxManager
+import joshxviii.plantz.block.entity.getMailboxMailQueue
 import joshxviii.plantz.inventory.MailboxMenu
 import joshxviii.plantz.pazResource
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
@@ -34,40 +37,29 @@ data class SendMailRequestPayload(val targetPos: BlockPos) : CustomPacketPayload
             val menu = player.containerMenu as? MailboxMenu ?: return
 
             val senderBE = level.getBlockEntity(menu.data.blockPos) as? MailboxBlockEntity ?: return
-            val targetBE = level.getBlockEntity(targetPos) as? MailboxBlockEntity ?: return
+            if (menu.availableMailboxes.none { it.blockPos == targetPos }) return
 
-            var stack = menu.mailSlot.item.copy()
+            val stack = menu.mailSlot.item.copy()
             if (stack.isEmpty) return
 
-            var success = false
-
-            for (i in 0 until 5) {
-                val existing = targetBE.getItem(i)
-
-                if (existing.isEmpty) {
-                    targetBE.setItem(i, stack)
-                    success = true
-                    break
-                } else if (ItemStack.isSameItem(existing, stack) && existing.count < existing.maxStackSize) {
-                    val space = existing.maxStackSize - existing.count
-                    val toAdd = minOf(space, stack.count)
-                    existing.grow(toAdd)
-                    stack.shrink(toAdd)
-                    targetBE.setItem(i, existing)
-
-                    if (stack.isEmpty) {
-                        success = true
-                        break
-                    }
-                }
+            val targetBE = level.getBlockEntity(targetPos) as? MailboxBlockEntity
+            val success = if (targetBE != null) {
+                MailboxMailQueue.tryInsertIntoMailbox(targetBE, stack)
+            } else if (level.isLoaded(targetPos)) {
+                level.getMailboxMailQueue().discardFor(targetPos)
+                MailboxManager.unregisterMailbox(level, targetPos)
+                false
+            } else {
+                level.getMailboxMailQueue().queue(targetPos, stack)
+                true
             }
 
             if (success) {
                 menu.mailSlot.set(ItemStack.EMPTY)
                 menu.broadcastChanges()
                 senderBE.setChanged()
-                targetBE.setChanged()
-                targetBE.updateMailboxState(MailboxState.HAS_MAIL)
+                targetBE?.setChanged()
+                targetBE?.updateMailboxState(MailboxState.HAS_MAIL)
                 level.playSound(null, menu.data.blockPos, SoundEvents.UI_LOOM_SELECT_PATTERN, SoundSource.BLOCKS, 0.3f, 1.2f)
                 ServerPlayNetworking.send(player, SendMailResponsePayload(
                     Component.translatable("container.plantz.mailbox_success").withColor(0x00FF00)
@@ -76,7 +68,7 @@ data class SendMailRequestPayload(val targetPos: BlockPos) : CustomPacketPayload
             else {
                 level.playSound(null, menu.data.blockPos, SoundEvents.BARREL_CLOSE, SoundSource.BLOCKS, 0.3f, 1.2f)
                 ServerPlayNetworking.send(player, SendMailResponsePayload(
-                    Component.translatable("container.plantz.mailbox_full", targetBE.name).withColor(0xFF0000)
+                    Component.translatable("container.plantz.mailbox_full", targetBE?.name ?: Component.translatable("item.plantz.mailbox")).withColor(0xFF0000)
                 ))
             }
         }
