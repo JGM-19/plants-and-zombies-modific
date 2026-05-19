@@ -29,7 +29,8 @@ class SoldierZombie(type: EntityType<out SoldierZombie>, level: Level) : PazZomb
             usingEntity = this,
             projectileFactory =  { PaintBall(level(), this) },
             velocity = 1.3,
-            actionDelay = 25,
+            actionDelay = 8,
+            soundEvent = null,
             actionEndEffect = {
 
             }))
