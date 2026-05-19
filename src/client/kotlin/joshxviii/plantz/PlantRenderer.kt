@@ -121,7 +121,8 @@ class PlantRenderer(
     }
 
     override fun getTextureLocation(state: PlantRenderState): Identifier {
-        return state.getTextureLocation(PlantRenderState.TEXTURE_PATH, state.getSuffixes())
+        val texture = state.getTextureLocation(PlantRenderState.TEXTURE_PATH, state.getSuffixes())
+        return texture
     }
 }
 

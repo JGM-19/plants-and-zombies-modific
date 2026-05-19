@@ -10,8 +10,12 @@ import joshxviii.plantz.ai.goal.MeleeAttackActionGoal
 import joshxviii.plantz.ai.goal.ProjectileAttackGoal
 import joshxviii.plantz.entity.projectile.PeaElectric
 import joshxviii.plantz.entity.projectile.PeaFire
+import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.tags.FluidTags
+import net.minecraft.util.RandomSource
 import net.minecraft.world.effect.MobEffectInstance
+import net.minecraft.world.entity.EntitySpawnReason
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal
@@ -20,9 +24,25 @@ import net.minecraft.world.entity.monster.Enemy
 import net.minecraft.world.entity.monster.zombie.Zombie
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.ServerLevelAccessor
 import net.minecraft.world.phys.Vec3
 
 class LightningReed(type: EntityType<out Plant>, level: Level) : Plant(PazEntities.LIGHTNING_REED, level) {
+    companion object {
+        fun checkLightningReedSpawnRules(
+            type: EntityType<out Plant>,
+            level: ServerLevelAccessor,
+            spawnReason: EntitySpawnReason,
+            pos: BlockPos,
+            random: RandomSource
+        ): Boolean {
+            val isThundering = level.level.isThundering
+
+            return checkValidSpawn(level, pos, spawnReason)
+                    && isThundering && pos.y > level.seaLevel - 8
+        }
+    }
+
     override fun registerGoals() {
         super.registerGoals()
 

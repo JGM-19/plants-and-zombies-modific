@@ -1,9 +1,13 @@
 # Changelog 1.5
 ### Additions
 - Added Electric Peashooter
+  - Acquired by striking a peashooter with lightning.
 - Added Lightning Reed
+  - Found in swamps and near rivers during a thunderstorm.
 - Added Tangle Kelp
+  - Found in swamps and mangroves.
 - Added Explode-O-Nut
+  - Acquired from Wall Nut zen-gardening.
 - Added plant transformations
   - Some plants can be transformed into other plants under certain conditions.
 - Added Seed Packet Mutations
