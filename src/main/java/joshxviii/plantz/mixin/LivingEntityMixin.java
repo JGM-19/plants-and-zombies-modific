@@ -187,13 +187,7 @@ abstract public class LivingEntityMixin implements PlantHeadAttachment {
     public void updateEffects() {
         var self = (LivingEntity) (Object) this;
         self.getEntityData().set(DATA_HYPNO_ID, this.hasEffect(PazEffects.HYPNOTIZE));
-        if (this.hasEffect(PazEffects.PAINTED)) {
-            if (Objects.requireNonNull(this.getEffect(PazEffects.PAINTED)).getEffect().value() instanceof PaintedMobEffect paintedEffect) {
-                var paintedColor = paintedEffect.getPaintColor();
-                self.getEntityData().set(DATA_PAINTED_COLOR, paintedColor);
-            }
-        }
-        else self.getEntityData().set(DATA_PAINTED_COLOR, -1);
+        self.getEntityData().set(DATA_PAINTED_COLOR, PaintedMobEffect.getPaintColor(self));
     }
 
     @Inject(method = "canBeAffected", at = @At(value = "RETURN"), cancellable = true)

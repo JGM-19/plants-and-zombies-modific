@@ -14,10 +14,13 @@ import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.world.effect.MobEffect
 import net.minecraft.world.effect.MobEffectCategory
 import net.minecraft.world.effect.MobEffectInstance
+import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.ai.attributes.AttributeModifier
 import net.minecraft.world.entity.ai.attributes.Attributes
 import net.minecraft.world.entity.ai.goal.Goal
+import net.minecraft.world.item.DyeColor
 import net.minecraft.world.item.alchemy.Potion
+import org.jetbrains.annotations.Nullable
 
 object PazEffects {
 
@@ -30,9 +33,11 @@ object PazEffects {
             .withSoundOnAdded(PazSounds.APPLY_ZOMBIE_OMEN))
     @JvmField val ELECTRIFIED : Holder<MobEffect> = register("electrified",
         ElectrifyMobEffect(MobEffectCategory.HARMFUL, 0x87FFFB, PazServerParticles.ELECTRIFIED))
-    @JvmField val PAINTED : Holder<MobEffect> = register("painted",
-        PaintedMobEffect(MobEffectCategory.HARMFUL))
-            //.withSoundOnAdded(PazSounds.APPLY_ZOMBIE_OMEN))
+    @JvmField val PAINTED : Map<DyeColor, Holder<MobEffect>> = (
+            DyeColor.entries.associateWith { color -> register("painted/${color}",
+                PaintedMobEffect(MobEffectCategory.HARMFUL, color.fireworkColor))
+                //.withSoundOnAdded(PazSounds.APPLY_ZOMBIE_OMEN))
+            })
     @JvmField val BUTTERED: Holder<MobEffect> = register("buttered",
         ButteredMobEffect(MobEffectCategory.HARMFUL, 13416767, PazServerParticles.BUTTER_DRIP)
             .addAttributeModifier(Attributes.MOVEMENT_SPEED, pazResource("effect.buttered"), -999.0, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)
@@ -41,7 +46,6 @@ object PazEffects {
             .addAttributeModifier(Attributes.ENTITY_INTERACTION_RANGE, pazResource("effect.buttered"), -999.0, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)
             .addAttributeModifier(Attributes.BLOCK_INTERACTION_RANGE, pazResource("effect.buttered"), -999.0, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)
     )
-
 
     fun register(name: String, mobEffect: MobEffect): Holder<MobEffect> {
         return Registry.registerForHolder(

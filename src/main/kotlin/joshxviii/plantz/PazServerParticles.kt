@@ -22,7 +22,8 @@ import org.joml.Vector3f
 import java.util.function.Function
 
 object PazServerParticles {
-    @JvmField val BUTTER_DRIP:SimpleParticleType = registerSimple("butter_drip")
+    @JvmField val BUTTER_DRIP: SimpleParticleType = registerSimple("butter_drip")
+    @JvmField val PAINT_DRIP: SimpleParticleType = registerSimple("paint_drip")
     @JvmField val PEA_HIT: SimpleParticleType = registerSimple("pea")
     @JvmField val ICE_PEA_HIT: SimpleParticleType = registerSimple("pea_ice")
     @JvmField val FIRE_PEA_HIT: SimpleParticleType = registerSimple("pea_fire")

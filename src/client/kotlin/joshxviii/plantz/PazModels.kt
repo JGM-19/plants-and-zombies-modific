@@ -30,7 +30,7 @@ object PazModels {
     @JvmField
     val PAINT_COLOR_KEY: RenderStateDataKey<Int> = RenderStateDataKey.create { "plantz:painted" }
     @JvmField
-    val PAINT_OVERLAY_TEXTURE: Identifier = pazResource("textures/gui/paint_overlay.png")
+    val PAINT_OVERLAY_TEXTURE: Identifier = pazResource("textures/gui/overlay/paint1.png")
 
     val EMPTY_LAYER: ModelLayerLocation = ModelLayerLocation(pazResource("empty"), "empty")
 

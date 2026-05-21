@@ -1,5 +1,6 @@
 package joshxviii.plantz.mixin.client;
 
+import com.google.common.hash.HashCode;
 import joshxviii.plantz.PazEffects;
 import joshxviii.plantz.effect.PaintedMobEffect;
 import net.minecraft.client.DeltaTracker;
@@ -11,6 +12,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -39,24 +41,30 @@ public abstract class GuiMixin {
     @Inject(method = "extractCameraOverlays", at = @At("HEAD"))
     public void extractCameraOverlays(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         LocalPlayer player = this.minecraft.player;
-        if (player.hasEffect(PazEffects.PAINTED)) {
-            var effect = Objects.requireNonNull(player.getEffect(PazEffects.PAINTED)).getEffect().value();
-            if (effect instanceof PaintedMobEffect paintedMobEffect) {
-                extractPaintOverlay(graphics, paintedMobEffect.getPaintColor(), 1f);
+        if (player == null) return;
+        var effects = PaintedMobEffect.getPaintEffects(player, null);
+        effects.forEach( it -> {
+            if (it.getEffect().value() instanceof PaintedMobEffect paintedMobEffect) {
+                extractPaintOverlay(graphics, paintedMobEffect.getRandomness(), paintedMobEffect.getPaintColor(), it.getAmplifier(), (it.getDuration()/80f));
             }
-        }
+        });
     }
 
-    private void extractPaintOverlay(final GuiGraphicsExtractor graphics, int color, final float scale) {
+    @Unique
+    private void extractPaintOverlay(final GuiGraphicsExtractor graphics, RandomSource random, int color, int amplifier, float alpha) {
         float srcWidth = Math.min(graphics.guiWidth(), graphics.guiHeight());
-        float ratio = Math.min(graphics.guiWidth() / srcWidth, graphics.guiHeight() / srcWidth) * scale;
-        int width = Mth.floor(srcWidth * ratio);
-        int height = Mth.floor(srcWidth * ratio);
-        int left = (graphics.guiWidth() - width) / 2;
-        int top = (graphics.guiHeight() - height) / 2;
-        int right = left + width;
-        int bottom = top + height;
-        graphics.blit(RenderPipelines.GUI_TEXTURED, PAINT_OVERLAY_TEXTURE, 0, 0, 0.0F, 0.0F, graphics.guiWidth(), graphics.guiHeight(), graphics.guiWidth(), graphics.guiHeight(), ARGB.opaque(color));
+
+
+        for (int i = 0; i < amplifier+1; i++) {
+            float scale = 0.2f * (random.nextFloat() + 0.5f);
+            float ratio = Math.min(graphics.guiWidth() / srcWidth, graphics.guiHeight() / srcWidth) * scale;
+            int width = Mth.floor(srcWidth * ratio);
+            int height = Mth.floor(srcWidth * ratio);
+            int x = random.nextInt(graphics.guiWidth() - width);
+            int y = random.nextInt(graphics.guiHeight() - height);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, PAINT_OVERLAY_TEXTURE, x, y, 0.0F, 0.0F, width, height, width, height, ARGB.multiplyAlpha(ARGB.opaque(color), alpha));
+        }
+
         //graphics.fill(RenderPipelines.GUI, 0, bottom, graphics.guiWidth(), graphics.guiHeight(), -16777216);
         //graphics.fill(RenderPipelines.GUI, 0, 0, graphics.guiWidth(), top, -16777216);
         //graphics.fill(RenderPipelines.GUI, 0, top, left, bottom, -16777216);

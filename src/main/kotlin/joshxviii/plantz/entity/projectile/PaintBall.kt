@@ -9,6 +9,7 @@ import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.util.ARGB
+import net.minecraft.world.effect.MobEffectCategory
 import net.minecraft.world.effect.MobEffectInstance
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.animal.sheep.Sheep
@@ -64,22 +65,15 @@ class PaintBall(
 
     override fun afterHitEntityEffect(target: LivingEntity) {
         super.afterHitEntityEffect(target)
-        val oldEffect = target.getEffect(PazEffects.PAINTED)?.apply { effect.value().let {
-            if (it is PaintedMobEffect) it.paintColor = this@PaintBall.dyeColor.fireworkColor
-        } }
-        val paintedEffect = oldEffect?.effect?.value() as? PaintedMobEffect
-        if (paintedEffect is PaintedMobEffect) {
-            oldEffect.mapDuration { it + 40 }
-            paintedEffect.paintColor = ARGB.opaque(this@PaintBall.dyeColor.fireworkColor)
-            target.addEffect(oldEffect)
-        }
-        else {
-            val effectInstance = MobEffectInstance(PazEffects.PAINTED, 600, 0).apply { effect.value().let {
-                if (it is PaintedMobEffect) it.paintColor = ARGB.opaque(this@PaintBall.dyeColor.fireworkColor)
-            } }
+        val p = PazEffects.PAINTED[dyeColor] ?: return
+        val oldEffectInstance = target.getEffect(p)
+        if (oldEffectInstance != null) {
+            val effectInstance = MobEffectInstance(p, 180, oldEffectInstance.amplifier+1, false, true, false)
             target.addEffect(effectInstance)
         }
-
-        if (target is Sheep && target.hurtMarked) target.color = dyeColor
+        else {
+            val effectInstance = PazEffects.PAINTED[dyeColor]?.let { MobEffectInstance(it, 180, 0, false, true, false) } ?: return
+            target.addEffect(effectInstance)
+        }
     }
 }
